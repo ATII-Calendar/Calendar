@@ -1,25 +1,26 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import './styles/App.css';
+import { Route, Link } from "react-router-dom";
+import Home from './components/Home';
+import UserSettings from './components/UserSettings';
+import User from './types/User';
+import Event from './types/Event';
+import { addUserEvent } from './services/firebase/firebaseService';
 
 function App() {
+  let user: User = new User("test", "user", "test_user@ryecountryday.org", "1234");
+  user.setClass("A", "English");
+  console.log(user.getSchedule());
+
+  // TESTING DATABASE
+  // let testEvent = new Event("test event", new Date(), new Date(), false);
+  // addUserEvent(user, testEvent);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+    <Route exact path="/settings" render={() => <UserSettings user={user}/>}/>
+    <Route exact path="/" render={() => <Home/>}/>
+    </>
   );
 }
 
