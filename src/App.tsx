@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './styles/App.css';
-import { Route } from "react-router-dom";
+import { Redirect, Route } from "react-router-dom";
 import Home from './components/Home';
 import SignIn from './components/SignIn';
 
@@ -9,9 +9,12 @@ function App() {
 
   return (
     <>
-    { user ?  // if the user is signed in, user won't be null
+    { user ?  // if the user is signed in, this will evaluate to true
     <>
-    <Route exact path="/" render={() => <Home/>}/>
+    <Route exact path="/" render={() => <Home/>}>
+      <Redirect to="/home"/>
+    </Route>
+    <Route exact path="/home" render={() => <Home/>}/>
     </>
     : <SignIn setUser={setUser}/>
     }
