@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
+import '../styles/Home.css';
 import FullCalendar, { EventApi, DateSelectArg, EventClickArg, EventContentArg, formatDate } from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import { INITIAL_EVENTS, createEventId } from './event-utils'
 import { Redirect } from 'react-router-dom'
+import Header from './Header'
 
 export default function Home({user}: any) {
 
@@ -25,11 +27,13 @@ export default function Home({user}: any) {
       <li key={event.id}>
         <b>{formatDate(event.start!, {year: 'numeric', month: 'short', day: 'numeric'})}</b>
         <i>{event.title}</i>
-      </li>) }
+      </li>)
+  }
 
   function renderSidebar() {
     return (
       <>
+        <Header user={user}/>
         { user ? <div className='demo-app-sidebar'>
         <div className='demo-app-sidebar-section'>
           <h2>Instructions</h2>
@@ -92,7 +96,7 @@ export default function Home({user}: any) {
   }
 
   return (
-    <div className='demo-app'>
+    <div className='home'>
       {renderSidebar()}
       <div className='demo-app-main'>
         <FullCalendar
