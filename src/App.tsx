@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import '../node_modules/bootstrap/dist/css/bootstrap.css';
 import './styles/App.css';
 import { Redirect, Route } from "react-router-dom";
 import Home from './components/Home';
@@ -9,15 +10,12 @@ function App() {
 
   return (
     <>
-    { user ?  // if the user is signed in, this will evaluate to true
-    <>
-    <Route exact path="/" render={() => <Home/>}>
-      <Redirect to="/home"/>
-    </Route>
-    <Route exact path="/home" render={() => <Home/>}/>
-    </>
-    : <SignIn setUser={setUser}/>
-    }
+      <Route exact path="/">
+        { user ? <Redirect to="/home"/>
+        : <Redirect to="/signin"/> }
+      </Route>
+      <Route exact path="/home" render={() => <Home/>}/>
+      <Route exact path="/signin" render={() => <SignIn user={user} setUser={setUser}/>}/>
     </>
   );
 }

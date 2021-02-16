@@ -1,7 +1,7 @@
 import { auth } from './firebaseConfig';
 import firebase from 'firebase';
 
-function signIn(setUser: any) {
+function signIn(setUser: any, callback: any) {
   let provider = new firebase.auth.GoogleAuthProvider()
   auth.signInWithPopup(provider).then(result => {
     let credential = result.credential as firebase.auth.OAuthCredential;
@@ -9,6 +9,7 @@ function signIn(setUser: any) {
       let token = credential.accessToken;
       let user = result.user;
       setUser(user);
+      callback()
     }
   }).catch(err => {
     console.error(err);
