@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import '../styles/SignIn.css';
 import { useHistory } from 'react-router-dom';
 import Header from './Header';
@@ -9,7 +9,7 @@ import { actionTypes as actions } from '../reducer'
 
 export default function SignIn() {
   const history = useHistory()
-  let [{ user }, dispatch]: any = useUserValue();
+  const dispatch = useUserValue().dispatch;
 
   function signIn() {
     let provider = new firebase.auth.GoogleAuthProvider()
@@ -32,11 +32,13 @@ export default function SignIn() {
 
   return (
     <div className="signin">
-      <Header/>
-      <div className="card">
-        <div className="card-body">
-          <p className="fw-bold fs-4">Sign in with you RCDS google account.</p>
-          <button className="btn btn-primary" onClick={signIn}>Sign In with Google</button>
+      <div className="singing__body">
+        <Header/>
+        <div className="card">
+          <div className="card-body">
+            <p className="fw-bold fs-4">Sign in with you RCDS google account.</p>
+            <button className="btn btn-primary" onClick={signIn}>Sign In with Google</button>
+          </div>
         </div>
       </div>
     </div>

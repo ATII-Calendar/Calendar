@@ -7,11 +7,13 @@ import interactionPlugin from '@fullcalendar/interaction'
 import { INITIAL_EVENTS, createEventId } from './event-utils'
 import { Redirect } from 'react-router-dom'
 import Header from './Header'
+import { useUserValue } from '../contexts/userContext'
 
-export default function Home({user}: any) {
+export default function Home() {
 
   let [weekendsVisible, setWeekendsVisible] = useState(true)
   let [currentEvents, setCurrentEvents] = useState([])
+  const { user } = useUserValue().state;
 
   function renderEventContent(eventContent: EventContentArg) {
     return (
@@ -33,7 +35,7 @@ export default function Home({user}: any) {
   function renderSidebar() {
     return (
       <>
-        <Header user={user}/>
+        <Header/>
         { user ? <div className='demo-app-sidebar'>
         <div className='demo-app-sidebar-section'>
           <h2>Instructions</h2>

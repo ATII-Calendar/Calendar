@@ -1,5 +1,14 @@
 .signin {
   padding: 20px;
+  height: 100vh;
+  background-color: darkgray;
+}
+
+.signin__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
 }
 
 .header > p {
