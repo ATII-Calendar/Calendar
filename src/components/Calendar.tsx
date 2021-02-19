@@ -1,16 +1,13 @@
 import React, { useState } from 'react'
-import '../styles/Home.css';
 import FullCalendar, { EventApi, DateSelectArg, EventClickArg, EventContentArg, formatDate } from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import { INITIAL_EVENTS, createEventId } from './event-utils'
 import { Redirect } from 'react-router-dom'
-import Header from './Header'
 import { useUserValue } from '../contexts/userContext'
-import Calendar from './Calendar';
 
-export default function Home() {
+export default function Calendar() {
 
   let [weekendsVisible, setWeekendsVisible] = useState(true)
   let [currentEvents, setCurrentEvents] = useState([])
@@ -36,9 +33,8 @@ export default function Home() {
   function renderSidebar() {
     return (
       <>
-        <Header/>
-        { user ? <div className='demo-app-sidebar'>
-        <div className='demo-app-sidebar-section'>
+        { user ? <div className='calendar-sidebar'>
+        <div className='calendar-sidebar-section'>
           <h2>Instructions</h2>
           <ul>
             <li>Select dates and you will be prompted to create a new event</li>
@@ -46,7 +42,7 @@ export default function Home() {
             <li>Click an event to delete it</li>
           </ul>
         </div>
-        <div className='demo-app-sidebar-section'>
+        <div className='calendar-sidebar-section'>
           <label>
             <input
               type='checkbox'
@@ -56,7 +52,7 @@ export default function Home() {
             toggle weekends
           </label>
         </div>
-        <div className='demo-app-sidebar-section'>
+        <div className='calendar-sidebar-section'>
           <h2>All Events ({currentEvents.length})</h2>
           <ul>
             {currentEvents.map(renderSidebarEvent)}
@@ -101,7 +97,7 @@ export default function Home() {
   return (
     <div className='home'>
       {renderSidebar()}
-      <div className='demo-app-main'>
+      <div className='calendar-main'>
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           headerToolbar={{
