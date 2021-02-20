@@ -8,7 +8,6 @@ import { INITIAL_EVENTS, createEventId } from './event-utils'
 import { Redirect } from 'react-router-dom'
 import Header from './Header'
 import { useUserValue } from '../contexts/userContext'
-import Calendar from './Calendar';
 
 export default function Home() {
 
