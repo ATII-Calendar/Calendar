@@ -11,9 +11,13 @@ import { useUserValue } from '../contexts/userContext'
 
 export default function Home() {
 
+  let user: any;
+  let userState = useUserValue().state;
+  if (userState) {
+    user = userState.user;
+  }
   let [weekendsVisible, setWeekendsVisible] = useState(true)
   let [currentEvents, setCurrentEvents] = useState([])
-  const { user } = useUserValue().state;
 
   function renderEventContent(eventContent: EventContentArg) {
     return (

@@ -6,7 +6,11 @@ import { auth } from '../services/firebase/firebaseConfig';
 import '../styles/Header.css';
 
 export default function Header() {
-  const { user } = useUserValue().state;
+  let user: any;
+  let userState = useUserValue().state;
+  if (userState) {
+    user = userState.user;
+  }
   const dispatch = useUserValue().dispatch;
   const history = useHistory()
 
