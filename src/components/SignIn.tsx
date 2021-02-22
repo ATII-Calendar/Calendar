@@ -12,22 +12,20 @@ export default function SignIn() {
   const dispatch = useUserValue().dispatch;
 
   function signIn() {
-    let provider = new firebase.auth.GoogleAuthProvider()
     // TODO: get persistance to work
     // the key is being saved to local storage, but the user is still being required to sign in again.
     auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(async () => {
-      return auth.signInWithPopup(provider).then(result => {
-        let credential = result.credential as firebase.auth.OAuthCredential;
-        if (credential) {
-          let token = credential.accessToken;
-          let user = result.user;
-          dispatch({ type: actions.SET_USER, user: user})
-          history.push("/home")
-        }
-      }).catch((err: any) => {
-        console.error(err);
-      })
-    })
+      let provider = new firebase.auth.GoogleAuthProvider()
+      return auth.signInWithPopup(provider)
+    }).then(result => {
+      let credential = result.credential as firebase.auth.OAuthCredential;
+      if (credential) {
+        let user = result.user;
+        // TODO: ensure that the user signed in with an RCDS google account
+        dispatch({ type: actions.SET_USER, user: user})
+        history.push("/home")
+      }
+    }).catch((err: any) => console.error(err));
   }
 
   return (
