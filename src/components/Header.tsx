@@ -4,13 +4,16 @@ import { useUserValue } from '../contexts/userContext';
 import { actionTypes } from '../reducer';
 import { auth } from '../services/firebase/firebaseConfig';
 import '../styles/Header.css';
+import firebase from 'firebase';
 
-export default function Header() {
-  let user: any;
+export default function Header(): JSX.Element {
+
+  let user: firebase.User | null = null;
   let userState = useUserValue().state;
-  if (userState) {
+  if (userState.user) {
     user = userState.user;
   }
+
   const dispatch = useUserValue().dispatch;
   const history = useHistory()
 
@@ -30,11 +33,11 @@ export default function Header() {
         </button>
         { user &&
           <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
-          <p style={{margin: '5px'}}>{user.displayName}</p>
-          <button className="btn btn-danger" onClick={signOut}>Sign Out</button>
+            <p style={{margin: '5px'}}>{user.displayName}</p>
+            <button className="btn btn-danger" onClick={signOut}>Sign Out</button>
           </div>
         }
-        </div>
-      </nav>
-    )
-  }
+      </div>
+    </nav>
+  )
+}

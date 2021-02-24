@@ -1,7 +1,8 @@
-export const initialState = {
+import firebase from 'firebase';
+
+export const initialState: { user: firebase.User | null } = {
   user: null
 }
-
 export const actionTypes = {
   SET_USER: "SET_USER",
 }

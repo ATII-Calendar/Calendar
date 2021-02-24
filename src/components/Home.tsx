@@ -40,8 +40,8 @@ export default function Home() {
     return (
       <>
         <Header/>
-        { user ? <div className='demo-app-sidebar'>
-        <div className='demo-app-sidebar-section'>
+        { user ? <div className='home-sidebar'>
+        <div className='home-sidebar-section'>
           <h2>Instructions</h2>
           <ul>
             <li>Select dates and you will be prompted to create a new event</li>
@@ -49,7 +49,7 @@ export default function Home() {
             <li>Click an event to delete it</li>
           </ul>
         </div>
-        <div className='demo-app-sidebar-section'>
+        <div className='home-sidebar-section'>
           <label>
             <input
               type='checkbox'
@@ -59,7 +59,7 @@ export default function Home() {
             toggle weekends
           </label>
         </div>
-        <div className='demo-app-sidebar-section'>
+        <div className='home-sidebar-section'>
           <h2>All Events ({currentEvents.length})</h2>
           <ul>
             {currentEvents.map(renderSidebarEvent)}
@@ -104,7 +104,7 @@ export default function Home() {
   return (
     <div className='home'>
       {renderSidebar()}
-      <div className='demo-app-main'>
+      <div className='home-main'>
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           headerToolbar={{
