@@ -26,28 +26,6 @@ export default function Header(): JSX.Element {
     })
   }
 
-  /*
-  return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div className="container-fluid">
-        <Link className="navbar-brand" to="/home">RCDS Calendar</Link>
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-          <span className="navbar-toggler-icon"></span>
-        </button>
-
-        { user &&
-          <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
-            <button className="btn btn-link" style={{color: 'white', textDecoration: 'none'}} onClick={() => setShowMenu(!showMenu)}>{user.displayName}</button>
-            { showMenu && (
-              <button className="btn btn-danger btn-small btn-rounded" onClick={signOut}>Sign Out</button>
-            )}
-          </div>
-        }
-      </div>
-    </nav>
-  )
-   */
-
   let brandStyles: React.CSSProperties = {
     color: 'white',
     textDecoration: 'none',
