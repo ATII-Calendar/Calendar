@@ -4,10 +4,14 @@ import FullCalendar, { EventApi, DateSelectArg, EventClickArg, EventContentArg, 
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
-import { INITIAL_EVENTS, createEventId } from './event-utils'
+import { createEventId } from './event-utils'
 import { Redirect } from 'react-router-dom'
 import Header from './Header'
+import {addUserEvent} from '../services/firebase/databaseService'
 import { useUserValue } from '../contexts/userContext'
+import { EventInput } from '@fullcalendar/react'
+import { db } from '../services/firebase/firebaseConfig';
+
 
 export default function Home() {
 
@@ -16,9 +20,28 @@ export default function Home() {
   if (userState) {
     user = userState.user;
   }
+
+
   let [weekendsVisible, setWeekendsVisible] = useState(true)
   let [currentEvents, setCurrentEvents] = useState([])
 
+  async function retrieveEvents(){
+    let x = 0;
+    let events:EventInput[] = []
+
+    if (user != null){
+    await db.collection('test_collection').doc(user.uid).collection('events').get()
+      .then((querySnapshot) => {querySnapshot.forEach((doc => {
+        let data = doc.data();
+        events[x] = {id:String(x++), title:String(doc.id), start:new Date(data.start*25)}
+        console.log(events)
+      })
+    )})
+  }
+  console.log(events)
+
+  return events
+  }
   function renderEventContent(eventContent: EventContentArg) {
     return (
       <>
@@ -81,6 +104,9 @@ export default function Home() {
     calendarApi.unselect() // clear date selection
 
     if (title) {
+      //let testEvent = new Event(title, new Date(selectInfo.startStr), new Date(selectInfo.endStr), selectInfo.allDay)
+      let testUID = String(user.uid)
+      addUserEvent(testUID, title, new Date(selectInfo.startStr), new Date(selectInfo.endStr), selectInfo.allDay)
       calendarApi.addEvent({
         id: createEventId(),
         title,
@@ -101,6 +127,10 @@ export default function Home() {
     setCurrentEvents(events)
   }
 
+  function getEvents() {
+    return retrieveEvents().then(events => { return events })
+  }
+
   return (
     <div className='home'>
       {renderSidebar()}
@@ -118,7 +148,8 @@ export default function Home() {
           selectMirror={true}
           dayMaxEvents={true}
           weekends={weekendsVisible}
-          initialEvents={INITIAL_EVENTS} // alternatively, use the `events` setting to fetch from a feed
+          initialEvents = {getEvents} // alternatively, use the `events` setting to fetch from a feed
+          // retrieveEvents().then(events => {initialEvents = {events}}) // alternatively, use the `events` setting to fetch from a feed
           select={handleDateSelect}
           eventContent={renderEventContent} // custom render function
           eventClick={handleEventClick}

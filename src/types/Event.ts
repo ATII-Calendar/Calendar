@@ -15,7 +15,7 @@ class Event implements IEvent {
   allDay: boolean;
   title: string;
 
-  constructor(title: string, startDate?: Date, endDate?: Date, allDay?: boolean) {
+  constructor(title: string, startDate: Date, endDate: Date, allDay: boolean) {
     this.startDate = startDate || null;
     this.endDate = endDate || null;
     this.allDay = allDay || false;
