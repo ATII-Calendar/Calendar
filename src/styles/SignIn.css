@@ -1,14 +1,21 @@
 .signin {
   padding: 20px;
   height: 100vh;
-  background-color: darkgray;
+  /* background-color: darkgray; */
+  background: url("https://www.onlygfx.com/wp-content/uploads/2018/02/abstract-blue-paint-texture-4.jpg")
 }
 
 .signin__body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-evenly;
+  /* justify-content: space-evenly; */
+  position: relative;
+  top: 40%;
+}
+
+.card-body {
+  padding: 40px;
 }
 
 .header > p {

@@ -30,9 +30,9 @@ export default function SignIn() {
 
   return (
     <div className="signin">
-      <div className="singing__body">
-        <Header/>
+      <div className="signin__body">
         <div className="card">
+          <Header/>
           <div className="card-body">
             <p className="fw-bold fs-4">Sign in with you RCDS google account.</p>
             <button className="btn btn-primary" onClick={signIn}>Sign In with Google</button>

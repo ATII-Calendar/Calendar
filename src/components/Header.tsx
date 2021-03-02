@@ -39,28 +39,29 @@ export default function Header(): JSX.Element {
   return (
     <Navbar variant="dark" bg="dark" expand="lg" className="d-flex">
       <Navbar.Brand><Link to="/" style={brandStyles}>RCDS Calendar</Link></Navbar.Brand>
-      <Navbar.Toggle aria-controls="navbar-nav" />
-      <Navbar.Collapse id="navbar-nav">
-        <Nav className="mr-auto">
-        </Nav>
+      { user &&
+      <>
+        { /* <Navbar.Toggle aria-controls="navbar-nav" />
+             <Navbar.Collapse id="navbar-nav"> */}
+          <Nav className="mr-auto">
+          </Nav>
 
-        { user &&
-          <Dropdown className="ml-auto">
-            <Dropdown.Toggle variant="success" id="dropdown-basic">
-              {user.displayName}
-            </Dropdown.Toggle>
+            <Dropdown className="ml-auto">
+              <Dropdown.Toggle variant="success" id="dropdown-basic">
+                {user.displayName}
+              </Dropdown.Toggle>
 
-            <Dropdown.Menu>
-              <Dropdown.Item>
-                <Link to="/settings" style={listLinkStyles}>Settings</Link>
-              </Dropdown.Item>
-              <Dropdown.Divider />
-              <Dropdown.Item onClick={signOut} style={{color: 'red'}}>Sign Out</Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-        }
-
-      </Navbar.Collapse>
+              <Dropdown.Menu>
+                <Dropdown.Item>
+                  <Link to="/settings" style={listLinkStyles}>Settings</Link>
+                </Dropdown.Item>
+                <Dropdown.Divider />
+                <Dropdown.Item onClick={signOut} style={{color: 'red'}}>Sign Out</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+        { /* </Navbar.Collapse> */ }
+      </>
+      }
     </Navbar>
   )
 }
