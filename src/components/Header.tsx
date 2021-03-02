@@ -1,16 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useUserValue } from '../contexts/userContext';
 import { actionTypes } from '../reducer';
 import { auth } from '../services/firebase/firebaseConfig';
 import '../styles/Header.css';
+import firebase from 'firebase';
+import { Link } from 'react-router-dom';
+import { Button, Dropdown, Form, FormControl, Nav, Navbar, NavDropdown } from 'react-bootstrap';
 
-export default function Header() {
-  let user: any;
+export default function Header(): JSX.Element {
+
+  let user: firebase.User | null = null;
   let userState = useUserValue().state;
-  if (userState) {
+  if (userState.user) {
     user = userState.user;
   }
+  let [showMenu, setShowMenu] = useState(false);
   const dispatch = useUserValue().dispatch;
   const history = useHistory()
 
@@ -21,20 +26,41 @@ export default function Header() {
     })
   }
 
-  return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light">
-      <div className="container-fluid">
-        <a className="navbar-brand" href="/home">RCDS Calendar</a>
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-          <span className="navbar-toggler-icon"></span>
-        </button>
-        { user &&
-          <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
-          <p style={{margin: '5px'}}>{user.displayName}</p>
-          <button className="btn btn-danger" onClick={signOut}>Sign Out</button>
-          </div>
-        }
-        </div>
-      </nav>
-    )
+  let brandStyles: React.CSSProperties = {
+    color: 'white',
+    textDecoration: 'none',
+    padding: '10px'
   }
+
+  let listLinkStyles: React.CSSProperties = {
+    textDecoration: 'none'
+  }
+
+  return (
+    <Navbar variant="dark" bg="dark" expand="lg" className="d-flex">
+      <Navbar.Brand><Link to="/" style={brandStyles}>RCDS Calendar</Link></Navbar.Brand>
+      <Navbar.Toggle aria-controls="navbar-nav" />
+      <Navbar.Collapse id="navbar-nav">
+        <Nav className="mr-auto">
+        </Nav>
+
+        { user &&
+          <Dropdown className="ml-auto">
+            <Dropdown.Toggle variant="success" id="dropdown-basic">
+              {user.displayName}
+            </Dropdown.Toggle>
+
+            <Dropdown.Menu>
+              <Dropdown.Item>
+                <Link to="/settings" style={listLinkStyles}>Settings</Link>
+              </Dropdown.Item>
+              <Dropdown.Divider />
+              <Dropdown.Item onClick={signOut} style={{color: 'red'}}>Sign Out</Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+        }
+
+      </Navbar.Collapse>
+    </Navbar>
+  )
+}
