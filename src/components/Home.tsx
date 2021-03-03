@@ -25,6 +25,12 @@ export default function Home() {
   let [weekendsVisible, setWeekendsVisible] = useState(true)
   let [currentEvents, setCurrentEvents] = useState([])
 
+  function toDateTime(secs: number) {
+      var t = new Date(1970, 0, 1); // Epoch
+      t.setSeconds(secs);
+      return t;
+  }
+
   async function retrieveEvents(){
     let x = 0;
     let events:EventInput[] = []
@@ -33,7 +39,8 @@ export default function Home() {
     await db.collection('test_collection').doc(user.uid).collection('events').get()
       .then((querySnapshot) => {querySnapshot.forEach((doc => {
         let data = doc.data();
-        events[x] = {id:String(x++), title:String(doc.id), start:new Date(data.start*25)}
+        console.log(data);
+        events[x] = {id:String(x++), title:String(doc.id), start: toDateTime(data.start.seconds)}
         console.log(events)
       })
     )})
