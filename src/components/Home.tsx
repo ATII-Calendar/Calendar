@@ -40,7 +40,12 @@ export default function Home() {
       .then((querySnapshot) => {querySnapshot.forEach((doc => {
         let data = doc.data();
         console.log(data);
-        events[x] = {id:String(x++), title:String(doc.id), start: toDateTime(data.start.seconds)}
+        events[x] = {
+          id:String(x++), title:String(doc.id),
+          start: toDateTime(data.start.seconds),
+          end: toDateTime(data.end.seconds),
+          allDay: data.allDay
+        }
         console.log(events)
       })
     )})
