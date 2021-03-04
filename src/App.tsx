@@ -1,27 +1,31 @@
 import React from 'react';
+import '../node_modules/bootstrap/dist/css/bootstrap.css';
 import './styles/App.css';
-import { Route, Link } from "react-router-dom";
 import Home from './components/Home';
-import UserSettings from './components/UserSettings';
-import User from './types/User';
-import Event from './types/Event';
-import WelcomePage from './components/WelcomePage';
-import { addUserEvent } from './services/firebase/firebaseService';
+
+import SignIn from './components/SignIn';
+import { Redirect, Route } from "react-router-dom";
+import { useUserValue } from './contexts/userContext'
+import { BrowserRouter } from 'react-router-dom';
+
 
 function App() {
-  let user: User = new User("test", "user", "test_user@ryecountryday.org", "1234");
-  user.setClass("A", "English");
-  console.log(user.getSchedule());
-
-  // TESTING DATABASE
-  // let testEvent = new Event("test event", new Date(), new Date(), false);
-  // addUserEvent(user, testEvent);
+  let user: any;
+  let userState = useUserValue().state;
+  if (userState) {
+    user = userState.user;
+  }
 
   return (
-    <>
-    <Route exact path="/settings" render={() => <UserSettings user={user}/>}/>
-    <Route exact path="/" render={() => <WelcomePage/>}/>
-    </>
+    <BrowserRouter>
+      <Route exact path="/">
+        { user ? <Redirect to="/home"/>
+        : <Redirect to="/signin"/> }
+      </Route>
+      <Route exact path="/home" render={() => <Home/>}/>
+      <Route exact path="/signin" render={() => <SignIn/>}/>
+    </BrowserRouter>
+
   );
 }
 

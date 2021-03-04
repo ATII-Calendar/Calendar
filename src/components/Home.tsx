@@ -1,60 +1,81 @@
-import React from 'react'
+import React, { useState } from 'react'
+import '../styles/Home.css';
 import FullCalendar, { EventApi, DateSelectArg, EventClickArg, EventContentArg, formatDate } from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
-import { INITIAL_EVENTS, createEventId } from './event-utils'
+import { createEventId } from './event-utils'
+import { Redirect } from 'react-router-dom'
+import Header from './Header'
+import {addUserEvent} from '../services/firebase/databaseService'
+import { useUserValue } from '../contexts/userContext'
+import { EventInput } from '@fullcalendar/react'
+import { db } from '../services/firebase/firebaseConfig';
 
-interface DemoAppState {
-  weekendsVisible: boolean
-  currentEvents: EventApi[]
-}
 
-export default class DemoApp extends React.Component<{}, DemoAppState> {
+export default function Home() {
 
-  state: DemoAppState = {
-    weekendsVisible: true,
-    currentEvents: []
+  let user: any;
+  let userState = useUserValue().state;
+  if (userState) {
+    user = userState.user;
   }
 
-  render() {
+
+  let [weekendsVisible, setWeekendsVisible] = useState(true)
+  let [currentEvents, setCurrentEvents] = useState([])
+
+  function toDateTime(secs: number) {
+      var t = new Date(1970, 0, 1); // Epoch
+      t.setSeconds(secs);
+      return t;
+  }
+
+  async function retrieveEvents() {
+    let x = 0;
+    let events:EventInput[] = []
+
+    if (user != null) {
+      await db.collection('test_collection').doc(user.uid).collection('events').get()
+        .then((querySnapshot) => {querySnapshot.forEach((doc => {
+          let data = doc.data();
+          events[x] = {
+            id:String(x++), title:String(doc.id),
+            start: toDateTime(data.start.seconds),
+            end: toDateTime(data.end.seconds),
+            allDay: data.allDay
+          }
+        })
+      )})
+    }
+    console.log(events)
+
+    return events
+  }
+
+  function renderEventContent(eventContent: EventContentArg) {
     return (
-      <div className='demo-app'>
-        {this.renderSidebar()}
-        <div className='demo-app-main'>
-          <FullCalendar
-            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-            headerToolbar={{
-              left: 'prev,next today',
-              center: 'title',
-              right: 'dayGridMonth,timeGridWeek,timeGridDay'
-            }}
-            initialView='dayGridMonth'
-            editable={true}
-            selectable={true}
-            selectMirror={true}
-            dayMaxEvents={true}
-            weekends={this.state.weekendsVisible}
-            initialEvents={INITIAL_EVENTS} // alternatively, use the `events` setting to fetch from a feed
-            select={this.handleDateSelect}
-            eventContent={renderEventContent} // custom render function
-            eventClick={this.handleEventClick}
-            eventsSet={this.handleEvents} // called after events are initialized/added/changed/removed
-            /* you can update a remote database when these fire:
-            eventAdd={function(){}}
-            eventChange={function(){}}
-            eventRemove={function(){}}
-            */
-          />
-        </div>
-      </div>
+      <>
+        <b>{eventContent.timeText}</b>
+        <i>{eventContent.event.title}</i>
+      </>
     )
   }
 
-  renderSidebar() {
+  function renderSidebarEvent(event: EventApi) {
     return (
-      <div className='demo-app-sidebar'>
-        <div className='demo-app-sidebar-section'>
+      <li key={event.id}>
+        <b>{formatDate(event.start!, {year: 'numeric', month: 'short', day: 'numeric'}) + " "}</b>
+        <i>{event.title}</i>
+      </li>)
+  }
+
+  function renderSidebar() {
+    return (
+      <>
+        <Header/>
+        { user ? <div className='home-sidebar'>
+        <div className='home-sidebar-section'>
           <h2>Instructions</h2>
           <ul>
             <li>Select dates and you will be prompted to create a new event</li>
@@ -62,39 +83,41 @@ export default class DemoApp extends React.Component<{}, DemoAppState> {
             <li>Click an event to delete it</li>
           </ul>
         </div>
-        <div className='demo-app-sidebar-section'>
+        <div className='home-sidebar-section'>
           <label>
             <input
               type='checkbox'
-              checked={this.state.weekendsVisible}
-              onChange={this.handleWeekendsToggle}
+              checked={weekendsVisible}
+              onChange={handleWeekendsToggle}
             ></input>
             toggle weekends
           </label>
         </div>
-        <div className='demo-app-sidebar-section'>
-          <h2>All Events ({this.state.currentEvents.length})</h2>
+        <div className='home-sidebar-section'>
+          <h2>All Events ({currentEvents.length})</h2>
           <ul>
-            {this.state.currentEvents.map(renderSidebarEvent)}
+            {currentEvents.map(renderSidebarEvent)}
           </ul>
         </div>
-      </div>
+        </div> : <Redirect to='/signin'/> }
+      </>
     )
   }
 
-  handleWeekendsToggle = () => {
-    this.setState({
-      weekendsVisible: !this.state.weekendsVisible
-    })
+  let handleWeekendsToggle = () => {
+    setWeekendsVisible(!weekendsVisible)
   }
 
-  handleDateSelect = (selectInfo: DateSelectArg) => {
+  let handleDateSelect = (selectInfo: DateSelectArg) => {
     let title = prompt('Please enter a new title for your event')
     let calendarApi = selectInfo.view.calendar
 
     calendarApi.unselect() // clear date selection
 
     if (title) {
+      //let testEvent = new Event(title, new Date(selectInfo.startStr), new Date(selectInfo.endStr), selectInfo.allDay)
+      let testUID = String(user.uid)
+      addUserEvent(testUID, title, new Date(selectInfo.startStr), new Date(selectInfo.endStr), selectInfo.allDay)
       calendarApi.addEvent({
         id: createEventId(),
         title,
@@ -105,34 +128,50 @@ export default class DemoApp extends React.Component<{}, DemoAppState> {
     }
   }
 
-  handleEventClick = (clickInfo: EventClickArg) => {
+  let handleEventClick = (clickInfo: EventClickArg) => {
     if (window.confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
       clickInfo.event.remove()
     }
   }
 
-  handleEvents = (events: EventApi[]) => {
-    this.setState({
-      currentEvents: events
-    })
+  let handleEvents = (events: any) => {
+    setCurrentEvents(events)
   }
 
-}
+  function getEvents() {
+    return retrieveEvents().then(events => { return events })
+  }
 
-function renderEventContent(eventContent: EventContentArg) {
   return (
-    <>
-      <b>{eventContent.timeText}</b>
-      <i>{eventContent.event.title}</i>
-    </>
-  )
-}
-
-function renderSidebarEvent(event: EventApi) {
-  return (
-    <li key={event.id}>
-      <b>{formatDate(event.start!, {year: 'numeric', month: 'short', day: 'numeric'})}</b>
-      <i>{event.title}</i>
-    </li>
+    <div className='home'>
+      {renderSidebar()}
+      <div className='home-main'>
+        <FullCalendar
+          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+          headerToolbar={{
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+          }}
+          initialView='dayGridMonth'
+          editable={true}
+          selectable={true}
+          selectMirror={true}
+          dayMaxEvents={true}
+          weekends={weekendsVisible}
+          initialEvents = {getEvents} // alternatively, use the `events` setting to fetch from a feed
+          // retrieveEvents().then(events => {initialEvents = {events}}) // alternatively, use the `events` setting to fetch from a feed
+          select={handleDateSelect}
+          eventContent={renderEventContent} // custom render function
+          eventClick={handleEventClick}
+          eventsSet={handleEvents} // called after events are initialized/added/changed/removed
+          /* you can update a remote database when these fire:
+          eventAdd={function(){}}
+          eventChange={function(){}}
+          eventRemove={function(){}}
+          */
+        />
+      </div>
+    </div>
   )
 }
