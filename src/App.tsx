@@ -5,6 +5,7 @@ import Home from './components/Home';
 import UserSettings from './components/UserSettings';
 import User from './types/User';
 import Event from './types/Event';
+import WelcomePage from './components/WelcomePage';
 import { addUserEvent } from './services/firebase/firebaseService';
 
 function App() {
@@ -19,7 +20,7 @@ function App() {
   return (
     <>
     <Route exact path="/settings" render={() => <UserSettings user={user}/>}/>
-    <Route exact path="/" render={() => <Home/>}/>
+    <Route exact path="/" render={() => <WelcomePage/>}/>
     </>
   );
 }
