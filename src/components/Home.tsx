@@ -4,11 +4,14 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import { INITIAL_EVENTS, createEventId } from './event-utils'
+import { WindowOpener } from './window-opener.js'
 
 interface DemoAppState {
   weekendsVisible: boolean
   currentEvents: EventApi[]
 }
+
+// use a props function, define addeventui in Home.tsx
 
 export default class DemoApp extends React.Component<{}, DemoAppState> {
 
@@ -45,6 +48,7 @@ export default class DemoApp extends React.Component<{}, DemoAppState> {
             eventChange={function(){}}
             eventRemove={function(){}}
             */
+           
           />
         </div>
       </div>
@@ -72,6 +76,12 @@ export default class DemoApp extends React.Component<{}, DemoAppState> {
             toggle weekends
           </label>
         </div>
+        <WindowOpener
+                        url='http://localhost:3000/event'
+                        // add bridge here needed
+                    >
+                        Add Event
+          </WindowOpener>
         <div className='demo-app-sidebar-section'>
           <h2>All Events ({this.state.currentEvents.length})</h2>
           <ul>
@@ -100,7 +110,9 @@ export default class DemoApp extends React.Component<{}, DemoAppState> {
         title,
         start: selectInfo.startStr,
         end: selectInfo.endStr,
+        // add event, if booleon true, render
         allDay: selectInfo.allDay
+        // booleon check whether pop up is open
       })
     }
   }

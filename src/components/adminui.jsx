@@ -13,6 +13,8 @@ class Counter extends Component {
       <img src={this.state.imageUrl} alt =""/>
       <span> <h1> Hello {this.state.name}! </h1> </span>
       <button> Change schedule </button>
+      // need some reference to a event //
+
       <div>
         <button> Email faculty </button>
       </div>
@@ -24,4 +26,4 @@ class Counter extends Component {
 
 }
 
-export default Counter;
+export default adminui;
