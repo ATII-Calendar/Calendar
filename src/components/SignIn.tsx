@@ -23,7 +23,7 @@ export default function SignIn() {
         let user = result.user;
         // TODO: ensure that the user signed in with an RCDS google account
         dispatch({ type: actions.SET_USER, user: user})
-        history.push("/home")
+        history.push("/")
       }
     }).catch((err: any) => console.error(err));
   }
