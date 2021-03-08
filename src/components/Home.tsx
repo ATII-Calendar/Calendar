@@ -20,9 +20,9 @@ export default function Home() {
     user = userState.user;
   }
 
-
-  let [weekendsVisible, setWeekendsVisible] = useState(true)
-  let [currentEvents, setCurrentEvents] = useState([])
+  let [weekendsVisible, setWeekendsVisible] = useState(true);
+  let [currentEvents, setCurrentEvents] = useState([]);
+  let [showSidebar, setShowSidebar] = useState(true);
 
   function toDateTime(secs: number) {
       var t = new Date(1970, 0, 1); // Epoch
@@ -73,9 +73,11 @@ export default function Home() {
     return (
       <>
         <div className='home-sidebar'>
-          <button className="btn btn-primary">Add Event</button>
+          <div className='home-sidebar-section' style={{marginBottom: "10px"}}>
+            <button className="btn btn-primary btn-block" style={{width: '100%'}}>Add Event</button>
+          </div>
           <div className='home-sidebar-section'>
-            <h2>All Events ({currentEvents.length})</h2>
+            <h4>All Events ({currentEvents.length})</h4>
             <ul>
               {currentEvents.map(renderSidebarEvent)}
             </ul>
@@ -124,7 +126,7 @@ export default function Home() {
       <div>
         <Header/>
         <div className='home'>
-          {renderSidebar()}
+          {showSidebar && renderSidebar()}
           <div className='home-main'>
             <FullCalendar
               plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}

@@ -7,6 +7,8 @@ import firebase from 'firebase';
 import { useUserValue } from '../contexts/userContext'
 import { actionTypes as actions } from '../reducer'
 
+import BackgroundImage from '../assets/signin-background.jpg';
+
 export default function SignIn() {
   const history = useHistory()
   const dispatch = useUserValue().dispatch;
@@ -29,7 +31,7 @@ export default function SignIn() {
   }
 
   return (
-    <div className="signin">
+    <div className="signin" style={{backgroundImage: `url(${BackgroundImage}`}}>
       <div className="signin__body">
         <div className="card">
           <Header/>

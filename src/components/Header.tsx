@@ -8,7 +8,7 @@ import firebase from 'firebase';
 import { Link } from 'react-router-dom';
 import { Button, Dropdown, Form, FormControl, Nav, Navbar, NavDropdown } from 'react-bootstrap';
 
-export default function Header(): JSX.Element {
+export default function Header({ showSidebar, setShowSidebar }: any): JSX.Element {
 
   let user: firebase.User | null = null;
   let userState = useUserValue().state;
@@ -18,6 +18,10 @@ export default function Header(): JSX.Element {
   let [showMenu, setShowMenu] = useState(false);
   const dispatch = useUserValue().dispatch;
   const history = useHistory()
+
+  function toggleSidebar() {
+    setShowSidebar(!showSidebar);
+  }
 
   function signOut() {
     auth.signOut().then(() => {
