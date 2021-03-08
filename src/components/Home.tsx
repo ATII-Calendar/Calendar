@@ -12,7 +12,6 @@ import { useUserValue } from '../contexts/userContext'
 import { EventInput } from '@fullcalendar/react'
 import { db } from '../services/firebase/firebaseConfig';
 
-
 export default function Home() {
 
   let user: any;
@@ -138,7 +137,7 @@ export default function Home() {
     setCurrentEvents(events)
   }
 
-  function getEvents() {
+  async function getEvents() {
     return retrieveEvents().then(events => { return events })
   }
 
