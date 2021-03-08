@@ -1,3 +1,16 @@
 .home {
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+}
+
+.home-main {
+  margin: 15px;
+  flex: 1;
+}
+
+.home-sidebar {
+  background-color: #D0D0D0;
+  margin: 0;
   padding: 10px;
 }

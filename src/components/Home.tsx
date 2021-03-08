@@ -72,39 +72,17 @@ export default function Home() {
   function renderSidebar() {
     return (
       <>
-        <Header/>
-        { user ? <div className='home-sidebar'>
-        <div className='home-sidebar-section'>
-          <h2>Instructions</h2>
-          <ul>
-            <li>Select dates and you will be prompted to create a new event</li>
-            <li>Drag, drop, and resize events</li>
-            <li>Click an event to delete it</li>
-          </ul>
+        <div className='home-sidebar'>
+          <button className="btn btn-primary">Add Event</button>
+          <div className='home-sidebar-section'>
+            <h2>All Events ({currentEvents.length})</h2>
+            <ul>
+              {currentEvents.map(renderSidebarEvent)}
+            </ul>
+          </div>
         </div>
-        <div className='home-sidebar-section'>
-          <label>
-            <input
-              type='checkbox'
-              checked={weekendsVisible}
-              onChange={handleWeekendsToggle}
-            ></input>
-            toggle weekends
-          </label>
-        </div>
-        <div className='home-sidebar-section'>
-          <h2>All Events ({currentEvents.length})</h2>
-          <ul>
-            {currentEvents.map(renderSidebarEvent)}
-          </ul>
-        </div>
-        </div> : <Redirect to='/signin'/> }
       </>
     )
-  }
-
-  let handleWeekendsToggle = () => {
-    setWeekendsVisible(!weekendsVisible)
   }
 
   let handleDateSelect = (selectInfo: DateSelectArg) => {
@@ -142,35 +120,33 @@ export default function Home() {
   }
 
   return (
-    <div className='home'>
-      {renderSidebar()}
-      <div className='home-main'>
-        <FullCalendar
-          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-          headerToolbar={{
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
-          }}
-          initialView='dayGridMonth'
-          editable={true}
-          selectable={true}
-          selectMirror={true}
-          dayMaxEvents={true}
-          weekends={weekendsVisible}
-          initialEvents = {getEvents} // alternatively, use the `events` setting to fetch from a feed
-          // retrieveEvents().then(events => {initialEvents = {events}}) // alternatively, use the `events` setting to fetch from a feed
-          select={handleDateSelect}
-          eventContent={renderEventContent} // custom render function
-          eventClick={handleEventClick}
-          eventsSet={handleEvents} // called after events are initialized/added/changed/removed
-          /* you can update a remote database when these fire:
-          eventAdd={function(){}}
-          eventChange={function(){}}
-          eventRemove={function(){}}
-          */
-        />
-      </div>
-    </div>
+    <> { user ?
+      <div>
+        <Header/>
+        <div className='home'>
+          {renderSidebar()}
+          <div className='home-main'>
+            <FullCalendar
+              plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+              headerToolbar={{
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+              }}
+              initialView='dayGridMonth'
+              editable={true}
+              selectable={true}
+              selectMirror={true}
+              dayMaxEvents={true}
+              weekends={weekendsVisible}
+              initialEvents = {getEvents} // alternatively, use the `events` setting to fetch from a feed
+              select={handleDateSelect}
+              eventContent={renderEventContent} // custom render function
+              eventClick={handleEventClick}
+              eventsSet={handleEvents} // called after events are initialized/added/changed/removed
+            />
+          </div>
+        </div>
+      </div> : <Redirect to="/signin"/> } </>
   )
 }
