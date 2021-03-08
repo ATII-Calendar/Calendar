@@ -46,8 +46,33 @@ export default function Home() {
       [5, 6, 4, 7, 8],
     ]
 
+    let startTimes = [
+      [9, 15], [11, 5], [12, 55], [14, 25], [15, 30]
+    ]
+
+    let endTimes = [
+      [10, 20], [12, 10], [14, 0], [3, 30], [4, 20]
+    ]
+
     for (let i = 0; i < 14; i++) {
         if (date.getDay() !== 0 && date.getDay() !== 6) {
+          for (let j = 0; j < 5; j++) {
+            let startTime = new Date(date);
+            startTime.setHours(startTimes[j][0]);
+            startTime.setMinutes(startTimes[j][1]);
+
+            let endTime = new Date(date);
+            endTime.setHours(endTimes[j][0]);
+            endTime.setMinutes(endTimes[j][1]);
+
+            events.push({
+              title: `${blocks[cycle[cycleDay-1][j]]} block`,
+              start: startTime,
+              end: endTime,
+              display: 'background'
+            });
+          }
+
           events.push({
             allDay: true,
             title: `Day ${cycleDay}`,

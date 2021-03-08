@@ -7,6 +7,7 @@ import firebase from 'firebase';
 import { useUserValue } from '../contexts/userContext'
 import { actionTypes as actions } from '../reducer'
 
+//@ts-ignore
 import BackgroundImage from '../assets/signin-background.jpg';
 
 export default function SignIn() {
