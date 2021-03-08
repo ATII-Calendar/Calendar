@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useUserValue } from '../contexts/userContext';
+import { actionTypes as actions } from '../reducer'
 import Header from './Header';
 
 const blocks = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
@@ -16,8 +17,10 @@ export default function WelcomePage() {
   if (userState) {
     user = userState.user;
   }
+  const dispatch = userState.dispatch;
 
   function buttonClick() {
+    // dispatch({ type: actions.SET_CLASSES, classes: classList });
     history.push("/home");
   }
 

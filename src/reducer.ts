@@ -1,11 +1,13 @@
 import firebase from 'firebase';
 
-export const initialState: { user: firebase.User | null } = {
-  user: null
+export const initialState: { user: firebase.User | null, classes: any[] | null } = {
+  user: null,
+  classes: null
 }
 
 export enum actionTypes {
   SET_USER,
+  SET_CLASSES
 }
 
 const reducer = (state: any, action: any) => {
@@ -15,6 +17,13 @@ const reducer = (state: any, action: any) => {
         ...state,
         user: action.user
       }
+
+    case actionTypes.SET_CLASSES:
+      return {
+        ...state,
+        classes: action.classes
+      }
+
     default:
       return state
   }

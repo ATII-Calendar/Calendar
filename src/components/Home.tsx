@@ -30,6 +30,40 @@ export default function Home() {
       return t;
   }
 
+  function calculateCycle() {
+    let cycleDay = 1;
+    let date = new Date();
+    let events = [];
+
+    const blocks = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
+
+    let cycle = [
+      [0, 1, 2, 3, 8],
+      [4, 5, 6, 7, 8],
+      [2, 0, 1, 3, 8],
+      [6, 4, 5, 7, 8],
+      [1, 2, 0, 3, 8],
+      [5, 6, 4, 7, 8],
+    ]
+
+    for (let i = 0; i < 14; i++) {
+        if (date.getDay() !== 0 && date.getDay() !== 6) {
+          events.push({
+            allDay: true,
+            title: `Day ${cycleDay}`,
+            start: date
+          });
+          cycleDay = ((cycleDay++) % 6) + 1;
+        }
+
+        let newDate = new Date(date);
+        newDate.setDate(date.getDate() + 1);
+        date = newDate;
+      }
+
+    return events;
+  }
+
   async function retrieveEvents() {
     let x = 0;
     let events:EventInput[] = []
@@ -49,7 +83,7 @@ export default function Home() {
     }
     console.log(events)
 
-    return events
+    return [...events, ...calculateCycle()];
   }
 
   function renderEventContent(eventContent: EventContentArg) {
