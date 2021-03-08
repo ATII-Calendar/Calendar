@@ -4,6 +4,7 @@ import FullCalendar, { EventApi, DateSelectArg, EventClickArg, EventContentArg, 
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
+import iCalendarPlugin from '@fullcalendar/icalendar'
 import { createEventId } from './event-utils'
 import { Redirect } from 'react-router-dom'
 import Header from './Header'
@@ -180,6 +181,14 @@ export default function Home() {
     return retrieveEvents().then(events => { return events })
   }
 
+
+  // initialEvents = {getEvents} // alternatively, use the `events` setting to fetch from a feed
+
+  // events = {{
+    // url: 'https://www.ryecountryday.org/calendar/calendar_1426.ics',
+    // format: 'ics',
+  // }}
+
   return (
     <> { user ?
       <div>
@@ -188,7 +197,7 @@ export default function Home() {
           {showSidebar && renderSidebar()}
           <div className='home-main'>
             <FullCalendar
-              plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+              plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, iCalendarPlugin]}
               headerToolbar={{
                 left: 'prev,next today',
                 center: 'title',
@@ -199,8 +208,8 @@ export default function Home() {
               selectable={true}
               selectMirror={true}
               dayMaxEvents={true}
-              weekends={weekendsVisible}
               initialEvents = {getEvents} // alternatively, use the `events` setting to fetch from a feed
+              weekends={weekendsVisible}
               select={handleDateSelect}
               eventContent={renderEventContent} // custom render function
               eventClick={handleEventClick}

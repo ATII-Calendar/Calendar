@@ -1637,6 +1637,15 @@
     "@fullcalendar/common" "~5.5.0"
     tslib "^2.0.3"
 
+"@fullcalendar/icalendar@^5.5.1":
+  version "5.5.1"
+  resolved "https://registry.yarnpkg.com/@fullcalendar/icalendar/-/icalendar-5.5.1.tgz#267f428f50276261431371a5cc389fdd42d77536"
+  integrity sha512-/zf39yH1LlK9Cg2n/NUi5/cmYiJZWToOzIodwCJTR1+5vvlfDsAJrY3YwmAQkn1CV5d0mV6D9sSKyEx4PTXWNw==
+  dependencies:
+    "@fullcalendar/common" "~5.5.0"
+    ical.js "^1.4.0"
+    tslib "^2.0.3"
+
 "@fullcalendar/interaction@^5.5.0":
   version "5.5.0"
   resolved "https://registry.yarnpkg.com/@fullcalendar/interaction/-/interaction-5.5.0.tgz#8fe3f2b89c55fad5835a9c74f7a95a7d97419afe"
