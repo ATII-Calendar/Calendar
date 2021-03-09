@@ -183,17 +183,16 @@ export default function Home() {
 
 
   // initialEvents = {getEvents} // alternatively, use the `events` setting to fetch from a feed
-
-  // events = {{
+// events = {{
     // url: 'https://www.ryecountryday.org/calendar/calendar_1426.ics',
     // format: 'ics',
   // }}
 
   return (
     <> { user ?
-      <div>
+      <div className='home'>
         <Header/>
-        <div className='home'>
+        <div className='home-body'>
           {showSidebar && renderSidebar()}
           <div className='home-main'>
             <FullCalendar
