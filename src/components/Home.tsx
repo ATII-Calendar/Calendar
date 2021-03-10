@@ -122,11 +122,13 @@ export default function Home() {
   }
 
   function renderSidebarEvent(event: EventApi) {
+    if (event.display !== 'background') {
     return (
       <li key={event.id}>
         <b>{formatDate(event.start!, {year: 'numeric', month: 'short', day: 'numeric'}) + " "}</b>
         <i>{event.title}</i>
       </li>)
+    }
   }
 
   function renderSidebar() {

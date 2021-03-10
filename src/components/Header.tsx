@@ -6,7 +6,7 @@ import { auth } from '../services/firebase/firebaseConfig';
 import '../styles/Header.css';
 import firebase from 'firebase';
 import { Link } from 'react-router-dom';
-import { Button, Dropdown, Form, FormControl, Nav, Navbar, NavDropdown } from 'react-bootstrap';
+import { Dropdown, Nav, Navbar } from 'react-bootstrap';
 
 export default function Header({ showSidebar, setShowSidebar }: any): JSX.Element {
 
@@ -45,8 +45,6 @@ export default function Header({ showSidebar, setShowSidebar }: any): JSX.Elemen
       <Navbar.Brand><Link to="/" style={brandStyles}>RCDS Calendar</Link></Navbar.Brand>
       { user &&
       <>
-        { /* <Navbar.Toggle aria-controls="navbar-nav" />
-             <Navbar.Collapse id="navbar-nav"> */}
           <Nav className="mr-auto">
           </Nav>
 
@@ -58,6 +56,9 @@ export default function Header({ showSidebar, setShowSidebar }: any): JSX.Elemen
               <Dropdown.Menu>
                 <Dropdown.Item>
                   <Link to="/settings" style={listLinkStyles}>Settings</Link>
+                </Dropdown.Item>
+                <Dropdown.Item>
+                  <Link to="/help" style={listLinkStyles}>Help</Link>
                 </Dropdown.Item>
                 <Dropdown.Divider />
                 <Dropdown.Item onClick={signOut} style={{color: 'red'}}>Sign Out</Dropdown.Item>
