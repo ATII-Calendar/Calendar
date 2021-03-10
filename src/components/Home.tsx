@@ -25,12 +25,15 @@ export default function Home() {
   let [currentEvents, setCurrentEvents] = useState([]);
   let [showSidebar, setShowSidebar] = useState(true);
 
+  // helper function to take seconds and create a date object
   function toDateTime(secs: number) {
       var t = new Date(1970, 0, 1); // Epoch
       t.setSeconds(secs);
       return t;
   }
 
+  // Generating a dummy cycle – ultimately this will be scraped from the RCDS
+  // site or another ical source
   function calculateCycle() {
     let cycleDay = 1;
     let date = new Date();
@@ -70,7 +73,8 @@ export default function Home() {
               title: `${blocks[cycle[cycleDay-1][j]]} block`,
               start: startTime,
               end: endTime,
-              display: 'background'
+              display: 'background',
+              eventColor: '#ff0000'
             });
           }
 
@@ -109,7 +113,7 @@ export default function Home() {
     }
     console.log(events)
 
-    return [...events, ...calculateCycle()];
+    return events;
   }
 
   function renderEventContent(eventContent: EventContentArg) {
@@ -122,15 +126,19 @@ export default function Home() {
   }
 
   function renderSidebarEvent(event: EventApi) {
+    // no need to render background events, which are typicall just the blocks
     if (event.display !== 'background') {
-    return (
-      <li key={event.id}>
-        <b>{formatDate(event.start!, {year: 'numeric', month: 'short', day: 'numeric'}) + " "}</b>
-        <i>{event.title}</i>
-      </li>)
+      return (
+        <li key={event.id}>
+          <b>{formatDate(event.start!, {year: 'numeric', month: 'short', day: 'numeric'}) + " "}</b>
+          <i>{event.title}</i>
+        </li>
+      )
     }
   }
 
+  // definition of the sidebar 
+  // maybe move this to its own component
   function renderSidebar() {
     return (
       <>
@@ -139,7 +147,7 @@ export default function Home() {
             <button className="btn btn-primary btn-block" style={{width: '100%'}}>Add Event</button>
           </div>
           <div className='home-sidebar-section'>
-            <h4>All Events ({currentEvents.length})</h4>
+            <h4>All Events</h4>
             <ul>
               {currentEvents.map(renderSidebarEvent)}
             </ul>
@@ -169,18 +177,24 @@ export default function Home() {
     }
   }
 
+  // TODO proper deletions (remove events from the API)
   let handleEventClick = (clickInfo: EventClickArg) => {
     if (window.confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
       clickInfo.event.remove()
     }
   }
 
+  // for when events are added – adds events to local state
   let handleEvents = (events: any) => {
     setCurrentEvents(events)
   }
 
   async function getEvents() {
-    return retrieveEvents().then(events => { return events })
+    return retrieveEvents().then(events => {
+      // //@ts-ignore
+      setCurrentEvents([]);
+      return [...events, ...calculateCycle()];
+    });
   }
 
   return (
