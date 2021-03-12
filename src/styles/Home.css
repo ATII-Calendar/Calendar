@@ -22,7 +22,7 @@
   margin: 0;
   padding: 10px;
   color: white;
-  height: auto;
+  /* height: auto; */
   /* max-height: 100vh; */;
-  overflow-y: scroll;
+  /* overflow-y: scroll; */
 }

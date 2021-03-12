@@ -13,14 +13,13 @@ export default function WelcomePage() {
   let history = useHistory();
 
   let user: any;
-  let userState = useUserValue().state;
-  if (userState) {
-    user = userState.user;
+  let { state, dispatch } = useUserValue();
+  if (state) {
+    user = state.user;
   }
-  const dispatch = userState.dispatch;
 
   function buttonClick() {
-    // dispatch({ type: actions.SET_CLASSES, classes: classList });
+    dispatch({ type: actions.SET_CLASSES, classes: classList });
     history.push("/home");
   }
 

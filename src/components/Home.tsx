@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import '../styles/Home.css';
 import FullCalendar, { EventApi, DateSelectArg, EventClickArg, EventContentArg, formatDate } from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
@@ -14,16 +14,32 @@ import { EventInput } from '@fullcalendar/react'
 import { db } from '../services/firebase/firebaseConfig';
 
 export default function Home() {
-
   let user: any;
+  let classes: any[];
   let userState = useUserValue().state;
   if (userState) {
     user = userState.user;
+    classes = userState.classes;
   }
 
   let [weekendsVisible, setWeekendsVisible] = useState(true);
   let [currentEvents, setCurrentEvents] = useState([]);
   let [showSidebar, setShowSidebar] = useState(true);
+
+  let [events, setEvents] = useState([]);
+  let [eventsLoaded, setEventsLoaded] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      retrieveEvents().then(events => {
+        // @ts-ignore
+        setEvents([...events, ...calculateCycle()]);
+        // @ts-ignore
+        setCurrentEvents([...events, ...calculateCycle()]);
+        setEventsLoaded(true);
+      });
+    }
+  }, [user]);
 
   // helper function to take seconds and create a date object
   function toDateTime(secs: number) {
@@ -70,18 +86,20 @@ export default function Home() {
             endTime.setMinutes(endTimes[j][1]);
 
             events.push({
-              title: `${blocks[cycle[cycleDay-1][j]]} block`,
+              // the most beautiful expresison you've ever seen:
+              title: classes[cycle[cycleDay-1][j]] ?
+                  `${classes[cycle[cycleDay-1][j]]}` :
+                  `${blocks[cycle[cycleDay-1][j]]} block`,
               start: startTime,
               end: endTime,
               display: 'background',
-              eventColor: '#ff0000'
             });
           }
 
           events.push({
             allDay: true,
             title: `Day ${cycleDay}`,
-            start: date
+            start: date,
           });
           cycleDay = ((cycleDay++) % 6) + 1;
         }
@@ -111,7 +129,6 @@ export default function Home() {
         })
       )})
     }
-    console.log(events)
 
     return events;
   }
@@ -127,7 +144,7 @@ export default function Home() {
 
   function renderSidebarEvent(event: EventApi) {
     // no need to render background events, which are typicall just the blocks
-    if (event.display !== 'background') {
+    if (event.display !== 'background' && event.title.substring(0, 3) !== "Day") {
       return (
         <li key={event.id}>
           <b>{formatDate(event.start!, {year: 'numeric', month: 'short', day: 'numeric'}) + " "}</b>
@@ -147,7 +164,7 @@ export default function Home() {
             <button className="btn btn-primary btn-block" style={{width: '100%'}}>Add Event</button>
           </div>
           <div className='home-sidebar-section'>
-            <h4>All Events</h4>
+            <h4>My Events</h4>
             <ul>
               {currentEvents.map(renderSidebarEvent)}
             </ul>
@@ -186,15 +203,18 @@ export default function Home() {
 
   // for when events are added – adds events to local state
   let handleEvents = (events: any) => {
+    // @ts-ignore
+    setCurrentEvents(null);
     setCurrentEvents(events)
   }
 
   async function getEvents() {
-    return retrieveEvents().then(events => {
-      // //@ts-ignore
-      setCurrentEvents([]);
-      return [...events, ...calculateCycle()];
+    return Promise.resolve(events).then(evnts => {
+      return evnts;
     });
+    // return retrieveEvents().then(events => {
+      // return events;
+    // });
   }
 
   return (
@@ -204,13 +224,14 @@ export default function Home() {
         <div className='home-body'>
           {showSidebar && renderSidebar()}
           <div className='home-main'>
-            <FullCalendar
+            { eventsLoaded && <FullCalendar
               plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, iCalendarPlugin]}
               headerToolbar={{
                 left: 'prev,next today',
                 center: 'title',
                 right: 'dayGridMonth,timeGridWeek,timeGridDay'
               }}
+
               initialView='dayGridMonth'
               editable={true}
               selectable={true}
@@ -222,7 +243,7 @@ export default function Home() {
               eventContent={renderEventContent} // custom render function
               eventClick={handleEventClick}
               eventsSet={handleEvents} // called after events are initialized/added/changed/removed
-            />
+            /> }
           </div>
         </div>
       </div> : <Redirect to="/signin"/> } </>
