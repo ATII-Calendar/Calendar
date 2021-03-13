@@ -7,7 +7,7 @@ import WelcomePage from './components/WelcomePage';
 import { Redirect, Route } from "react-router-dom";
 import { useUserValue } from './contexts/userContext'
 import { BrowserRouter } from 'react-router-dom';
-
+import UserSettings from './components/UserSettings';
 
 function App() {
   let user: any;
@@ -25,6 +25,7 @@ function App() {
       <Route exact path="/welcome" render={() => <WelcomePage/>}/>
       <Route exact path="/home" render={() => <Home/>}/>
       <Route exact path="/signin" render={() => <SignIn/>}/>
+      <Route exact path="/settings" render={() => <UserSettings/>}/>
     </BrowserRouter>
 
   );

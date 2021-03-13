@@ -169,6 +169,9 @@ export default function Home() {
               {currentEvents.map(renderSidebarEvent)}
             </ul>
           </div>
+          <div className='home-sidebar-seciont'>
+            <h4>My Calendars</h4>
+          </div>
         </div>
       </>
     )
