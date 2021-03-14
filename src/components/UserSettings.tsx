@@ -3,16 +3,18 @@ import '../styles/UserSettings.css';
 import { useUserValue } from '../contexts/userContext'
 import Header from './Header';
 import { actionTypes as actions } from '../reducer'
+import { useHistory } from 'react-router-dom';
 
 export default function UserSettings() {
+  let history = useHistory();
   let { state, dispatch } = useUserValue();
-  let { classes } = state;
+  let { user, classes } = state;
   const blocks = ["A", "B", "C", "D", "E", "F", "G", "H", "I"];
-  let [classList, setClassList] = useState([...classes]);
+  let [classList, setClassList] = useState(classes ? [...classes] : []);
 
-  function updateClasses(e: any) {
-    dispatch({ type: actions.SET_CLASSES, classes: classList });
-    e.preventDefault;
+  function updateClasses(event: any) {
+    dispatch({ type: actions.SET_CLASSES, classes: classList })
+    event.preventDefault();
   }
 
   function classInputted(value: string, index: number){
@@ -21,9 +23,8 @@ export default function UserSettings() {
     setClassList(newClassList);
   }
 
-  console.log(classes)
   return (
-    <>
+    <> { user ?  <>
     <Header />
     <div className="user-settings">
       <div className="user-settings-sidebar">
@@ -36,12 +37,11 @@ export default function UserSettings() {
         <h1>Schedule</h1>
         <div className="schedule-items">
           <form onSubmit={updateClasses}>
-          {classes.map((c: string, i: number) => {
-            console.log(c)
+          {classes.map((_: string, i: number) => {
             return (
               <div className="schedule-item" key={i}>
                 <h4>{blocks[i]}</h4>
-                <input type="text" onChange={item => classInputted(item.target.value, i)}/>
+                <input type="text" onChange={item => classInputted(item.target.value, i)} value={classList[i]}/>
               </div>
             )
           })}
@@ -49,7 +49,7 @@ export default function UserSettings() {
           </form>
         </div>
       </div>
-    </div>
+    </div> </> : history.push("/signin") }
     </>
   )
 }
