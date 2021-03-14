@@ -1,11 +1,17 @@
 .schedule-item {
   display: flex;
   flex-direction: row;
+  margin-top: 20px;
+}
+
+.schedule-item > input {
+  padding: 10px;
 }
 
 .schedule-item > h4 {
   width: 30px;
   margin: 0 10px;
+  padding: 10px;
 }
 
 .user-settings {

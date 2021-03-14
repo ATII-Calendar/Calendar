@@ -27,8 +27,7 @@ export default function Header({ showSidebar, setShowSidebar }: any): JSX.Elemen
     auth.signOut().then(() => {
       dispatch({type: actionTypes.SET_USER, user: null})
       history.push("/signIn")
-    })
-  }
+    }) }
 
   let brandStyles: React.CSSProperties = {
     color: 'white',
@@ -42,7 +41,7 @@ export default function Header({ showSidebar, setShowSidebar }: any): JSX.Elemen
 
   return (
     <Navbar variant="dark" bg="dark" expand="lg" className="d-flex">
-      <Navbar.Brand><Link to="/" style={brandStyles}>RCDS Calendar</Link></Navbar.Brand>
+      <Navbar.Brand><Link to="/home" style={brandStyles}>RCDS Calendar</Link></Navbar.Brand>
       { user &&
       <>
           <Nav className="mr-auto">
