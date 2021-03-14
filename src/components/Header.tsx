@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Header({ showSidebar, setShowSidebar }: any): JSX.Element {
+export default function Header({ showSidebar, setShowSidebar, calRef }: any): JSX.Element {
 
   const classes = useStyles();
 
@@ -75,6 +75,16 @@ export default function Header({ showSidebar, setShowSidebar }: any): JSX.Elemen
         </Typography>
 
         { user && <>
+
+          { calRef &&
+            <Button
+              onClick={() => {
+                console.log(calRef.current.calendar.today())
+              }}
+              style={{color: 'white'}}
+            >Today</Button>
+          }
+
         <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick} style={{color: "white"}}>
           {user.displayName}
         </Button>

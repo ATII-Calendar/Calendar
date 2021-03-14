@@ -31,6 +31,8 @@
   border-right: solid 2px;
   border-color: #dddddd;
   padding: 5px 10px;
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar-item {

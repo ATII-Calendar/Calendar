@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import '../styles/Home.css';
 import FullCalendar, { EventApi, DateSelectArg, EventClickArg, EventContentArg, formatDate } from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
@@ -23,6 +23,8 @@ export default function Home() {
     user = userState.user;
     classes = userState.classes;
   }
+
+  let calRef = useRef<FullCalendar | null>(null);
 
   let [weekendsVisible, setWeekendsVisible] = useState(true);
   let [currentEvents, setCurrentEvents] = useState([]);
@@ -106,11 +108,7 @@ export default function Home() {
           cycleDay = ((cycleDay++) % 6) + 1;
         }
 
-        let newDate = new Date(date);
-        newDate.setDate(date.getDate() + 1);
-        date = newDate;
-      }
-
+        let newDate = new Date(date); newDate.setDate(date.getDate() + 1); date = newDate; }
     return events;
   }
 
@@ -180,7 +178,7 @@ export default function Home() {
               {currentEvents.map(renderSidebarEvent)}
             </ul>
           </div>
-          <div className='home-sidebar-seciont'>
+          <div className='home-sidebar-section'>
             <h4>My Calendars</h4>
           </div>
         </div>
@@ -226,26 +224,27 @@ export default function Home() {
     return Promise.resolve(events).then(evnts => {
       return evnts;
     });
-    // return retrieveEvents().then(events => {
-      // return events;
-    // });
   }
 
   return (
     <> { user ?
       <div className='home'>
-        <Header showSidebar={showSidebar} setShowSidebar={setShowSidebar}/>
+        <Header showSidebar={showSidebar} setShowSidebar={setShowSidebar} calRef={calRef}/>
         <div className='home-body'>
           {showSidebar && renderSidebar()}
           <div className='home-main'>
             { eventsLoaded && <FullCalendar
               plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, iCalendarPlugin]}
-              headerToolbar={{
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay'
-              }}
-
+              // headerToolbar={{
+                // // left: 'prev,next today',
+                // // center: 'title',
+                // // right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                // left: '',
+                // center: '',
+                // right: ''
+              // }}
+              headerToolbar={false}
+              ref={calRef}
               initialView='dayGridMonth'
               editable={true}
               selectable={true}
@@ -257,6 +256,7 @@ export default function Home() {
               eventContent={renderEventContent} // custom render function
               eventClick={handleEventClick}
               eventsSet={handleEvents} // called after events are initialized/added/changed/removed
+              handleWindowResize={true}
             /> }
           </div>
         </div>

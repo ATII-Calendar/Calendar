@@ -6,6 +6,8 @@ import { actionTypes as actions } from '../reducer'
 import { useHistory } from 'react-router-dom';
 import SettingsIcon from '@material-ui/icons/Settings';
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
+import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace';
+import Button from '@material-ui/core/Button';
 
 export default function UserSettings() {
   let history = useHistory();
@@ -54,7 +56,7 @@ export default function UserSettings() {
               </div>
             )
           })}
-          <button type="submit" className="btn btn-primary">Save Changes</button>
+          <Button type="submit" variant="contained" color="primary">Save Changes</Button>
           </form>
         </div>
       </>
@@ -66,13 +68,34 @@ export default function UserSettings() {
     <Header />
     <div className="user-settings">
       <div className="user-settings-sidebar">
-        <div className="sidebar-item" onClick={() => setCurrentView(1)}>
-          <SettingsIcon /><h4>General</h4>
+        <div style={{borderBottom: 'solid 2px #dddddd'}}>
+        <Button
+          startIcon={<KeyboardBackspaceIcon />}
+          onClick={() => history.push("/home")}
+          size="small"
+          style={{borderRadius: '50px', padding: '5px 15px'}}
+        > back to home </Button>
         </div>
 
-        <div className="sidebar-item" onClick={() => setCurrentView(2)}>
-          <CalendarTodayIcon /><h4>Schedule</h4>
-        </div>
+        <Button
+          startIcon={<SettingsIcon />}
+          onClick={() => setCurrentView(1)}
+          size="large"
+          style={{
+            borderRadius: '50px',
+            padding: '5px 15px',
+          }}
+        >General</Button>
+
+        <Button
+          startIcon={<CalendarTodayIcon />}
+          onClick={() => setCurrentView(2)}
+          size="large"
+          style={{
+            borderRadius: '50px',
+            padding: '5px 15px',
+          }}
+        >Schedule</Button>
       </div>
 
       <div className="user-settings-body">
