@@ -234,7 +234,7 @@ export default function Home() {
   return (
     <> { user ?
       <div className='home'>
-        <Header/>
+        <Header showSidebar={showSidebar} setShowSidebar={setShowSidebar}/>
         <div className='home-body'>
           {showSidebar && renderSidebar()}
           <div className='home-main'>
