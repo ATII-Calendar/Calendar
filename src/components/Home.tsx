@@ -12,6 +12,8 @@ import {addUserEvent} from '../services/firebase/databaseService'
 import { useUserValue } from '../contexts/userContext'
 import { EventInput } from '@fullcalendar/react'
 import { db } from '../services/firebase/firebaseConfig';
+import Button from '@material-ui/core/Button'
+import AddIcon from '@material-ui/icons/Add';
 
 export default function Home() {
   let user: any;
@@ -143,7 +145,9 @@ export default function Home() {
   }
 
   function renderSidebarEvent(event: EventApi) {
-    // no need to render background events, which are typicall just the blocks
+    // no need to render background events, which are typically just the blocks
+    // also no need to render "day" events, which will just make the event list
+    // very long for no good reason
     if (event.display !== 'background' && event.title.substring(0, 3) !== "Day") {
       return (
         <li key={event.id}>
@@ -161,7 +165,14 @@ export default function Home() {
       <>
         <div className='home-sidebar'>
           <div className='home-sidebar-section' style={{marginBottom: "10px"}}>
-            <button className="btn btn-primary btn-block" style={{width: '100%'}}>Add Event</button>
+            <Button
+              color="primary"
+              variant="contained"
+              style={{width:"100%"}}
+              startIcon={<AddIcon />}
+            >
+              Add Event
+            </Button>
           </div>
           <div className='home-sidebar-section'>
             <h4>My Events</h4>

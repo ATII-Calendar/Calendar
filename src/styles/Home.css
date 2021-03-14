@@ -18,11 +18,10 @@
 }
 
 .home-sidebar {
-  background-color: #222E51;
+  /* background-color: #222E51; */
+  /* color: white; */
   margin: 0;
   padding: 10px;
-  color: white;
-  /* height: auto; */
-  /* max-height: 100vh; */;
-  /* overflow-y: scroll; */
+  border-right: solid 2px;
+  border-color: #dddddd;
 }
