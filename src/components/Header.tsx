@@ -83,14 +83,14 @@ export default function Header({ showSidebar, setShowSidebar, calRef }: any): JS
             style={{ color: 'white', marginLeft: 0, marginRight: '10px', borderColor: 'white'}}
             variant="outlined"
           >Today</Button>
-          <IconButton onClick={() => calRef.current.getApi().prevYear()} edge="start" className={styles.menuButton} color="inherit" aria-label="menu">
-            <NavigateBeforeIcon />
-          </IconButton>
-          <IconButton onClick={() => calRef.current.getApi().nextYear()} edge="start" className={styles.menuButton} color="inherit" aria-label="menu">
-            <NavigateNextIcon />
-          </IconButton>
           <Typography variant="h6" className={styles.title}>
-            {months[calRef.current.getApi().getDate().getMonth()]}
+            <IconButton onClick={() => calRef.current.getApi().prevYear()} edge="start"  color="inherit" aria-label="menu">
+              <NavigateBeforeIcon />
+            </IconButton>
+            {months[calRef.current.getApi().getDate().getMonth()] + ", " + (1900 + calRef.current.getApi().getDate().getYear())}
+            <IconButton onClick={() => calRef.current.getApi().nextYear()} edge="start"  color="inherit" aria-label="menu">
+              <NavigateNextIcon />
+            </IconButton>
           </Typography>
         </>
         }

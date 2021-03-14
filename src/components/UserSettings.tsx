@@ -73,7 +73,7 @@ export default function UserSettings() {
           startIcon={<KeyboardBackspaceIcon />}
           onClick={() => history.push("/home")}
           size="small"
-          style={{borderRadius: '50px', padding: '5px 15px'}}
+          style={{borderRadius: '50px', padding: '5px 15px', margin: '5px'}}
         > back to home </Button>
         </div>
 
@@ -81,20 +81,14 @@ export default function UserSettings() {
           startIcon={<SettingsIcon />}
           onClick={() => setCurrentView(1)}
           size="large"
-          style={{
-            borderRadius: '50px',
-            padding: '5px 15px',
-          }}
+          style={{borderRadius: '50px', padding: '5px 15px', margin: '5px'}}
         >General</Button>
 
         <Button
           startIcon={<CalendarTodayIcon />}
           onClick={() => setCurrentView(2)}
           size="large"
-          style={{
-            borderRadius: '50px',
-            padding: '5px 15px',
-          }}
+          style={{borderRadius: '50px', padding: '5px 15px', margin: '5px'}}
         >Schedule</Button>
       </div>
 
