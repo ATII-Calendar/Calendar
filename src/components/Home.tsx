@@ -235,14 +235,7 @@ export default function Home() {
           <div className='home-main'>
             { eventsLoaded && <FullCalendar
               plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, iCalendarPlugin]}
-              // headerToolbar={{
-                // // left: 'prev,next today',
-                // // center: 'title',
-                // // right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                // left: '',
-                // center: '',
-                // right: ''
-              // }}
+              height="100%"
               headerToolbar={false}
               ref={calRef}
               initialView='dayGridMonth'

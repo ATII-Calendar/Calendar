@@ -5,8 +5,6 @@ import { actionTypes } from '../reducer';
 import { auth } from '../services/firebase/firebaseConfig';
 import '../styles/Header.css';
 import firebase from 'firebase';
-import { Link } from 'react-router-dom';
-import { Dropdown, Nav, Navbar } from 'react-bootstrap';
 
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -16,7 +14,8 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import { Menu, MenuItem } from '@material-ui/core';
-
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,7 +31,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Header({ showSidebar, setShowSidebar, calRef }: any): JSX.Element {
 
-  const classes = useStyles();
+  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const styles = useStyles();
 
   let user: firebase.User | null = null;
   let userState = useUserValue().state;
@@ -42,6 +42,7 @@ export default function Header({ showSidebar, setShowSidebar, calRef }: any): JS
   let [showMenu, setShowMenu] = useState(false);
   const dispatch = useUserValue().dispatch;
   const history = useHistory()
+
 
   function toggleSidebar() {
     setShowSidebar(!showSidebar);
@@ -67,23 +68,34 @@ export default function Header({ showSidebar, setShowSidebar, calRef }: any): JS
     <AppBar position="static" style={{backgroundColor: '#222e51'}}>
       <Toolbar>
         {(setShowSidebar) &&
-        <IconButton onClick={toggleSidebar} edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
+        <IconButton onClick={toggleSidebar} edge="start" className={styles.menuButton} color="inherit" aria-label="menu">
           <MenuIcon />
         </IconButton>}
-        <Typography variant="h6" className={classes.title}>
+        <Typography variant="h6" className={styles.title}>
           RCDS Calendar
         </Typography>
+        { user && calRef && calRef.current &&
+        <>
+          <Button
+            onClick={() => {
+              calRef.current.getApi().today();
+            }}
+            style={{ color: 'white', marginLeft: 0, marginRight: '10px', borderColor: 'white'}}
+            variant="outlined"
+          >Today</Button>
+          <IconButton onClick={() => calRef.current.getApi().prevYear()} edge="start" className={styles.menuButton} color="inherit" aria-label="menu">
+            <NavigateBeforeIcon />
+          </IconButton>
+          <IconButton onClick={() => calRef.current.getApi().nextYear()} edge="start" className={styles.menuButton} color="inherit" aria-label="menu">
+            <NavigateNextIcon />
+          </IconButton>
+          <Typography variant="h6" className={styles.title}>
+            {months[calRef.current.getApi().getDate().getMonth()]}
+          </Typography>
+        </>
+        }
 
         { user && <>
-
-          { calRef &&
-            <Button
-              onClick={() => {
-                console.log(calRef.current.calendar.today())
-              }}
-              style={{color: 'white'}}
-            >Today</Button>
-          }
 
         <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick} style={{color: "white"}}>
           {user.displayName}
