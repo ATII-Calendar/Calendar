@@ -65,6 +65,14 @@ export default function Header({ showSidebar, setShowSidebar, calRef }: any): JS
     setAnchorEl(null);
   };
 
+  const prev = () => {
+    calRef.current.getApi().prevYear();
+  }
+
+  const next = () => {
+    calRef.current.getApi().nextYear()
+  }
+
   return (<>
     <AppBar position="static" style={{backgroundColor: '#222e51'}}>
       <Toolbar>
@@ -86,11 +94,11 @@ export default function Header({ showSidebar, setShowSidebar, calRef }: any): JS
             color="secondary"
           >Today</Button>
           <Typography variant="h6" className={styles.title}>
-            <IconButton onClick={() => calRef.current.getApi().prevYear()} edge="start"  color="inherit" aria-label="menu">
+            <IconButton onClick={prev} edge="start"  color="inherit" aria-label="menu">
               <NavigateBeforeIcon />
             </IconButton>
             {months[calRef.current.getApi().getDate().getMonth()] + ", " + (1900 + calRef.current.getApi().getDate().getYear())}
-            <IconButton onClick={() => calRef.current.getApi().nextYear()} edge="start"  color="inherit" aria-label="menu">
+            <IconButton onClick={next} edge="start"  color="inherit" aria-label="menu">
               <NavigateNextIcon />
             </IconButton>
           </Typography>
