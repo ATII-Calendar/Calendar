@@ -16,6 +16,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import { Menu, MenuItem } from '@material-ui/core';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
+import ViewMenu from './ViewMenu';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -71,7 +72,7 @@ export default function Header({ showSidebar, setShowSidebar, calRef }: any): JS
         <IconButton onClick={toggleSidebar} edge="start" className={styles.menuButton} color="inherit" aria-label="menu">
           <MenuIcon />
         </IconButton>}
-        <Typography variant="h6" className={styles.title}>
+        <Typography variant="h6" style={{marginRight: "2rem"}}>
           RCDS Calendar
         </Typography>
         { user && calRef && calRef.current &&
@@ -80,8 +81,9 @@ export default function Header({ showSidebar, setShowSidebar, calRef }: any): JS
             onClick={() => {
               calRef.current.getApi().today();
             }}
-            style={{ color: 'white', marginLeft: 0, marginRight: '10px', borderColor: 'white'}}
+            style={{ marginLeft: 0, marginRight: '10px' }}
             variant="outlined"
+            color="secondary"
           >Today</Button>
           <Typography variant="h6" className={styles.title}>
             <IconButton onClick={() => calRef.current.getApi().prevYear()} edge="start"  color="inherit" aria-label="menu">
@@ -92,12 +94,13 @@ export default function Header({ showSidebar, setShowSidebar, calRef }: any): JS
               <NavigateNextIcon />
             </IconButton>
           </Typography>
+          <ViewMenu calRef={calRef}/>
         </>
         }
 
         { user && <>
 
-        <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick} style={{color: "white"}}>
+          <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick} style={{marginRight: 0, marginLeft: "auto", color: "white"}}>
           {user.displayName}
         </Button>
         <Menu

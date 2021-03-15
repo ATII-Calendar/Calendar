@@ -8,6 +8,16 @@ import { Redirect, Route } from "react-router-dom";
 import { useUserValue } from './contexts/userContext'
 import { BrowserRouter } from 'react-router-dom';
 import UserSettings from './components/UserSettings';
+import { createMuiTheme } from '@material-ui/core/styles';
+import { ThemeProvider } from '@material-ui/styles';
+
+const theme = createMuiTheme({
+  palette: {
+    secondary: {
+      main: '#fed457',
+    },
+  },
+});
 
 function App() {
   let user: any;
@@ -17,6 +27,7 @@ function App() {
   }
 
   return (
+    <ThemeProvider theme={theme}>
     <BrowserRouter>
       <Route exact path="/">
         { user ? <Redirect to="/welcome"/>
@@ -27,7 +38,7 @@ function App() {
       <Route exact path="/signin" render={() => <SignIn/>}/>
       <Route exact path="/settings" render={() => <UserSettings/>}/>
     </BrowserRouter>
-
+    </ThemeProvider>
   );
 }
 
