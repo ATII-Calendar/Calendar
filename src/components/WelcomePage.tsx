@@ -1,5 +1,6 @@
 // I used this website https://stackoverflow.com/questions/36683770/how-to-get-the-value-of-an-input-field-using-reactjs
 // to figure out how to handle user inputer
+import { Button } from '@material-ui/core';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useUserValue } from '../contexts/userContext';
@@ -33,9 +34,7 @@ export default function WelcomePage() {
     <div>
       {!user && history.push("/signin") /* go to signin if there is no logged in user */ }
       <Header />
-      <h1>
-        <h1 style = {{fontSize: 60, textAlign: 'center'}}>Welcome!</h1>
-      </h1>
+      <h1 style = {{fontSize: 60, textAlign: 'center'}}>Welcome!</h1>
       <div>
         <div style={{textAlign: 'center', marginBottom: '10px'}}>
           <h4>Enter the class you have during each block. If you have a free, please leave the space blank.</h4>
@@ -51,9 +50,9 @@ export default function WelcomePage() {
             )
           })}
         </ul>
-        <button className="btn btn-primary" style={{marginLeft: '42%', height: 50, width: 250, textAlign:'center', float: 'initial'}} onClick={() => buttonClick()}>
+        <Button color="primary" variant="contained" style={{marginLeft: '42%', height: 50, width: 250, textAlign:'center', float: 'initial'}} onClick={() => buttonClick()}>
             Continue
-        </button>
+        </Button>
       </div>
     </div>
   )
