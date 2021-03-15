@@ -6,10 +6,10 @@ import { auth } from '../services/firebase/firebaseConfig';
 import firebase from 'firebase';
 import { useUserValue } from '../contexts/userContext'
 import { actionTypes as actions } from '../reducer'
+import { Button, Card, CardContent } from '@material-ui/core';
 
 //@ts-ignore
 import BackgroundImage from '../assets/signin-background.jpg';
-import { Card, CardContent } from '@material-ui/core';
 
 export default function SignIn() {
   const history = useHistory()
@@ -39,7 +39,7 @@ export default function SignIn() {
           <Header/>
           <CardContent>
             <p className="fw-bold fs-4">Sign in with you RCDS google account.</p>
-            <button className="btn btn-primary" onClick={signIn}>Sign In with Google</button>
+            <Button color="primary" variant="contained" onClick={signIn}>Sign In with Google</Button>
           </CardContent>
         </Card>
       </div>
