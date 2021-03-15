@@ -9,6 +9,7 @@ import { actionTypes as actions } from '../reducer'
 
 //@ts-ignore
 import BackgroundImage from '../assets/signin-background.jpg';
+import { Card, CardContent } from '@material-ui/core';
 
 export default function SignIn() {
   const history = useHistory()
@@ -34,13 +35,13 @@ export default function SignIn() {
   return (
     <div className="signin" style={{backgroundImage: `url(${BackgroundImage}`}}>
       <div className="signin__body">
-        <div className="card">
+        <Card>
           <Header/>
-          <div className="card-body">
+          <CardContent>
             <p className="fw-bold fs-4">Sign in with you RCDS google account.</p>
             <button className="btn btn-primary" onClick={signIn}>Sign In with Google</button>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )
