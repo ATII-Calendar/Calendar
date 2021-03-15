@@ -41,6 +41,7 @@ export default function Header({ showSidebar, setShowSidebar, calRef }: any): JS
     user = userState.user;
   }
   let [showMenu, setShowMenu] = useState(false);
+  const [currentView, setCurrentView] = useState<string>("Month");
   const dispatch = useUserValue().dispatch;
   const history = useHistory()
 
@@ -66,11 +67,11 @@ export default function Header({ showSidebar, setShowSidebar, calRef }: any): JS
   };
 
   const prev = () => {
-    calRef.current.getApi().prevYear();
+    calRef.current.getApi().prev();
   }
 
   const next = () => {
-    calRef.current.getApi().nextYear()
+    calRef.current.getApi().next()
   }
 
   return (<>
@@ -97,12 +98,18 @@ export default function Header({ showSidebar, setShowSidebar, calRef }: any): JS
             <IconButton onClick={prev} edge="start"  color="inherit" aria-label="menu">
               <NavigateBeforeIcon />
             </IconButton>
-            {months[calRef.current.getApi().getDate().getMonth()] + ", " + (1900 + calRef.current.getApi().getDate().getYear())}
+            { calRef.current.getApi().currentDataManager.state.currentViewType !== "dayGridDay" ?
+              months[calRef.current.getApi().getDate().getMonth()] + ", " +
+                (1900 + calRef.current.getApi().getDate().getYear())
+              : months[calRef.current.getApi().getDate().getMonth()] + " " +
+                calRef.current.getApi().getDate().getDate() + ", " +
+                (1900 + calRef.current.getApi().getDate().getYear())
+            }
             <IconButton onClick={next} edge="start"  color="inherit" aria-label="menu">
               <NavigateNextIcon />
             </IconButton>
           </Typography>
-          <ViewMenu calRef={calRef}/>
+          <ViewMenu calRef={calRef} currentView={currentView} setCurrentView={setCurrentView}/>
         </>
         }
 

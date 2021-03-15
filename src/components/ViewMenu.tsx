@@ -33,9 +33,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ViewMenu({ calRef }: any) {
+export default function ViewMenu({ calRef, currentView, setCurrentView }: any) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [currentView, setCurrentView] = useState<string>("Month");
   const styles = useStyles();
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
