@@ -49,8 +49,10 @@ export default function ViewMenu({ calRef, currentView, setCurrentView }: any) {
     setCurrentView(selection);
     let api = calRef.current.getApi();
 
-    console.log(api);
-    api.changeView("dayGrid" + selection);
+    if (selection !== 'Month') api.changeView("timeGrid" + selection);
+    else api.changeView("dayGrid" + selection);
+
+    handleClose();
   }
 
   return (
