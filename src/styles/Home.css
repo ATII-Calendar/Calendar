@@ -1,3 +1,35 @@
+/* .home { */
+  /* display: flex; */
+  /* flex-direction: column; */
+  /* height: 50vh; */
+  /* max-height: 100vh; */
+/* } */
+
+.home-body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+}
+
 .home {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.home-main {
+  margin: 0;
+  flex: 1;
+}
+
+.home-sidebar {
+  /* background-color: #222E51; */
+  /* color: white; */
+  margin: 0;
   padding: 10px;
+  /* border-right: solid 1px; */
+  border-color: #dddddd;
+  max-width: 20vw;
 }

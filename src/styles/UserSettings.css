@@ -1,0 +1,61 @@
+.schedule-item {
+  display: flex;
+  flex-direction: row;
+  margin-top: 20px;
+}
+
+.schedule-item > input {
+  width: 100%;
+  padding: 10px;
+}
+
+.schedule-item > h4 {
+  width: 30px;
+  margin: 0 10px;
+  padding: 10px;
+}
+
+.user-settings {
+  display: flex;
+  flex-direction: row;
+}
+
+.user-settings-body {
+  flex: 0.9;
+  padding: 10px;
+}
+
+.user-settings-sidebar {
+  /* background-color: #222E51; */
+  /* color: white; */
+  border-right: solid 2px;
+  border-color: #dddddd;
+  padding: 5px 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-item {
+  margin: 10px 0;
+
+  padding: 2px 20px;
+  border-radius: 50px;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  vertical-align: center;
+}
+
+.sidebar-item:hover {
+  background-color: #dddddd;
+  cursor: pointer;
+}
+
+.sidebar-item > h4 {
+  margin-left: 7px;
+}
+
+.schedule-items > form > button {
+  margin: 20px;
+}

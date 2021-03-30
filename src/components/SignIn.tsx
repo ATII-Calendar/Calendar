@@ -6,6 +6,10 @@ import { auth } from '../services/firebase/firebaseConfig';
 import firebase from 'firebase';
 import { useUserValue } from '../contexts/userContext'
 import { actionTypes as actions } from '../reducer'
+import { Button, Card, CardContent } from '@material-ui/core';
+
+//@ts-ignore
+import BackgroundImage from '../assets/signin-background.jpg';
 
 export default function SignIn() {
   const history = useHistory()
@@ -23,21 +27,21 @@ export default function SignIn() {
         let user = result.user;
         // TODO: ensure that the user signed in with an RCDS google account
         dispatch({ type: actions.SET_USER, user: user})
-        history.push("/home")
+        history.push("/")
       }
     }).catch((err: any) => console.error(err));
   }
 
   return (
-    <div className="signin">
+    <div className="signin" style={{backgroundImage: `url(${BackgroundImage}`}}>
       <div className="signin__body">
-        <div className="card">
+        <Card>
           <Header/>
-          <div className="card-body">
+          <CardContent>
             <p className="fw-bold fs-4">Sign in with you RCDS google account.</p>
-            <button className="btn btn-primary" onClick={signIn}>Sign In with Google</button>
-          </div>
-        </div>
+            <Button color="primary" variant="contained" onClick={signIn}>Sign In with Google</Button>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )
