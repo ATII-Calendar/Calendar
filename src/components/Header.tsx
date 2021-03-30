@@ -98,9 +98,10 @@ export default function Header({ showSidebar, setShowSidebar, calRef }: any): JS
             <IconButton onClick={prev} edge="start"  color="inherit" aria-label="menu">
               <NavigateBeforeIcon />
             </IconButton>
-            { calRef.current.getApi().currentDataManager.state.currentViewType !== "dayGridDay" ?
+            { calRef.current.getApi().currentDataManager.state.currentViewType !== "timeGridDay" ?
               months[calRef.current.getApi().getDate().getMonth()] + ", " +
                 (1900 + calRef.current.getApi().getDate().getYear())
+
               : months[calRef.current.getApi().getDate().getMonth()] + " " +
                 calRef.current.getApi().getDate().getDate() + ", " +
                 (1900 + calRef.current.getApi().getDate().getYear())
