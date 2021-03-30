@@ -25,7 +25,7 @@ export default function Home() {
   }
 
   let calRef = useRef<FullCalendar | null>(null);
-
+  let globalEvents:any = null;
   let [weekendsVisible, setWeekendsVisible] = useState(true);
   let [currentEvents, setCurrentEvents] = useState([]);
   let [showSidebar, setShowSidebar] = useState(true);
@@ -35,7 +35,7 @@ export default function Home() {
 
   useEffect(() => {
     if (user) {
-      retrieveEvents().then(events => {
+      RetrieveEvents().then(events => {
         // @ts-ignore
         setEvents([...events, ...calculateCycle()]);
         // @ts-ignore
@@ -112,23 +112,35 @@ export default function Home() {
     return events;
   }
 
-  async function retrieveEvents() {
-    let x = 0;
+  async function RetrieveEvents() {
     let events:EventInput[] = []
 
-    if (user != null) {
-      await db.collection('test_collection').doc(user.uid).collection('events').get()
-        .then((querySnapshot) => {querySnapshot.forEach((doc => {
-          let data = doc.data();
-          events[x] = {
-            id:String(x++), title:String(doc.id),
-            start: toDateTime(data.start.seconds),
-            end: toDateTime(data.end.seconds),
-            allDay: data.allDay
+
+    if (globalEvents == null){
+      let x = 0;
+
+      if (user != null) {
+        await db.collection('test_collection').doc(user.uid).collection('events').get()
+          .then((querySnapshot) => {querySnapshot.forEach((doc => {
+            let data = doc.data();
+            events[x] = {
+              id:String(x++), title:String(doc.id),
+              start: toDateTime(data.start.seconds),
+              end: toDateTime(data.end.seconds),
+              allDay: data.allDay
           }
         })
       )})
+      console.log(events)
+
+      globalEvents = events
     }
+
+  }
+  else {
+    events = globalEvents
+
+  }
 
     return events;
   }
@@ -156,7 +168,7 @@ export default function Home() {
     }
   }
 
-  // definition of the sidebar 
+  // definition of the sidebar
   // maybe move this to its own component
   function renderSidebar() {
     return (
@@ -209,6 +221,7 @@ export default function Home() {
   // TODO proper deletions (remove events from the API)
   let handleEventClick = (clickInfo: EventClickArg) => {
     if (window.confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
+      db.collection('test_collection').doc(user.uid).collection('events').doc(clickInfo.event.title).delete()
       clickInfo.event.remove()
     }
   }
@@ -221,9 +234,7 @@ export default function Home() {
   }
 
   async function getEvents() {
-    return Promise.resolve(events).then(evnts => {
-      return evnts;
-    });
+    return RetrieveEvents().then(events => { return events })
   }
 
   return (
