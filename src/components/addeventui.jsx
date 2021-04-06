@@ -58,28 +58,28 @@ export class addeventui extends React.Component {
       <input
             type="text"
             value={eventName} 
-            onChange={this.handleChange1}
+            onChange={this.onChangeHandler1}
          />
       <div>
         Enter Event Date: 
         <input
             type="text"
             value={eventDate}
-            onChange={this.handleChange2}
+            onChange={this.onChangeHandler2}
          />
       </div>
       Enter Event Starting Time: 
       <input
             type="text"
             value={startTime}
-            onChange={this.handleChange3}
+            onChange={this.onChangeHandler3}
          />
          <div>
       Enter Event Ending Time: 
       <input
             type="text"
             value={endTime}
-            onChange={this.handleChange4}
+            onChange={this.onChangeHandler4}
          />
          </div>     
     </div>
