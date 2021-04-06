@@ -124,7 +124,7 @@ export default function Home() {
           .then((querySnapshot) => {querySnapshot.forEach((doc => {
             let data = doc.data();
             events[x] = {
-              id:String(x++), title:String(doc.id),
+              id:doc.id, title:String(data.title),
               start: toDateTime(data.start.seconds),
               end: toDateTime(data.end.seconds),
               allDay: data.allDay
@@ -141,6 +141,7 @@ export default function Home() {
     events = globalEvents
 
   }
+    console.log(events)
 
     return events;
   }
@@ -221,7 +222,7 @@ export default function Home() {
   // TODO proper deletions (remove events from the API)
   let handleEventClick = (clickInfo: EventClickArg) => {
     if (window.confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
-      db.collection('test_collection').doc(user.uid).collection('events').doc(clickInfo.event.title).delete()
+      db.collection('test_collection').doc(user.uid).collection('events').doc(clickInfo.event.id).delete()
       clickInfo.event.remove()
     }
   }
