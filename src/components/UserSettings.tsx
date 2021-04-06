@@ -12,15 +12,26 @@ import Button from '@material-ui/core/Button';
 export default function UserSettings() {
   let history = useHistory();
   let { state, dispatch } = useUserValue();
-  let { user, classes } = state;
+  let { user, userSettings } = state;
   const blocks = ["A", "B", "C", "D", "E", "F", "G", "H", "I"];
-  let [classList, setClassList] = useState(classes ? [...classes] : []);
+  let [classList, setClassList] = useState(userSettings ? [...userSettings.classes].map(i => {
+    return i ? i : ""
+  }): []);
 
   let [currentView, setCurrentView] = useState(1);
 
   // helper function to update global state when the form is submitted
   function updateClasses(event: any) {
-    dispatch({ type: actions.SET_CLASSES, classes: classList })
+    if (userSettings) {
+      dispatch({ type: actions.SET_USER_SETTINGS, userSettings: {
+        ...userSettings,
+        classes: classList
+      }})
+    } else {
+      dispatch({ type: actions.SET_USER_SETTINGS, userSettings: {
+        classes: classList
+      }})
+    }
     event.preventDefault();
   }
 
@@ -48,7 +59,7 @@ export default function UserSettings() {
         </div>
         <div className="schedule-items">
           <form onSubmit={updateClasses}>
-          {classes.map((_: string, i: number) => {
+          {classList.map((_: string, i: number) => {
             return (
               <div className="schedule-item" key={i}>
                 <h4>{blocks[i]}</h4>

@@ -14,13 +14,24 @@ export default function WelcomePage() {
   let history = useHistory();
 
   let user: any;
+  let userSettings: any;
   let { state, dispatch } = useUserValue();
   if (state) {
     user = state.user;
+    userSettings = state.userSettings;
   }
 
   function buttonClick() {
-    dispatch({ type: actions.SET_CLASSES, classes: classList });
+    if (userSettings) {
+      dispatch({ type: actions.SET_USER_SETTINGS, userSettings: {
+        ...userSettings,
+        classes: classList
+      }});
+    } else {
+      dispatch({ type: actions.SET_USER_SETTINGS, userSettings: {
+        classes: classList
+      }});
+    }
     history.push("/home");
   }
 

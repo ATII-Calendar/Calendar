@@ -17,11 +17,11 @@ import AddIcon from '@material-ui/icons/Add';
 
 export default function Home() {
   let user: any;
-  let classes: any[];
+  let userSettings: any; 
   let userState = useUserValue().state;
   if (userState) {
     user = userState.user;
-    classes = userState.classes;
+    userSettings = userState.userSettings;
   }
 
   let calRef = useRef<FullCalendar | null>(null);
@@ -91,9 +91,9 @@ export default function Home() {
 
             events.push({
               // the most beautiful expresison you've ever seen:
-              title: classes[cycle[cycleDay-1][j]] ?
-                  `${classes[cycle[cycleDay-1][j]]}` :
-                  `${blocks[cycle[cycleDay-1][j]]} block`,
+              title: userSettings.classes[cycle[cycleDay-1][j]] ?
+                  userSettings.classes[cycle[cycleDay-1][j]] :
+                  blocks[cycle[cycleDay-1][j]] + ' block',
               start: startTime,
               end: endTime,
               display: 'background',
@@ -131,7 +131,6 @@ export default function Home() {
           }
         })
       )})
-      console.log(events)
 
       globalEvents = events
     }
@@ -234,7 +233,7 @@ export default function Home() {
   }
 
   async function getEvents() {
-    return RetrieveEvents().then(events => { return events })
+    return RetrieveEvents().then(events => { return [...events, ...calculateCycle()] })
   }
 
   return (
