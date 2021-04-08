@@ -7,6 +7,7 @@ import firebase from 'firebase';
 import { useUserValue } from '../contexts/userContext'
 import { actionTypes as actions } from '../reducer'
 import { Button, Card, CardContent } from '@material-ui/core';
+import { db } from '../services/firebase/firebaseConfig';
 
 //@ts-ignore
 import BackgroundImage from '../assets/signin-background.jpg';
@@ -27,6 +28,20 @@ export default function SignIn() {
         let user = result.user;
         // TODO: ensure that the user signed in with an RCDS google account
         dispatch({ type: actions.SET_USER, user: user})
+
+        if (user) {
+         (async function() {
+            await db.collection('test_collection').doc(user.uid).collection('settings').get()
+            .then((querySnapshot: any) => {
+              querySnapshot.forEach((doc: any) => {
+                let { data } = doc;
+                console.log(data)
+                dispatch({type: actions.SET_USER_SETTINGS, userSettings: data})
+              });
+            });
+          })();
+        }
+
         history.push("/")
       }
     }).catch((err: any) => console.error(err));

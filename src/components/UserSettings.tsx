@@ -14,7 +14,7 @@ export default function UserSettings() {
   let { state, dispatch } = useUserValue();
   let { user, userSettings } = state;
   const blocks = ["A", "B", "C", "D", "E", "F", "G", "H", "I"];
-  let [classList, setClassList] = useState(userSettings ? [...userSettings.classes].map(i => {
+  let [classList, setClassList] = useState(userSettings && userSettings.classes ? [...userSettings.classes].map(i => {
     return i ? i : ""
   }): []);
 
