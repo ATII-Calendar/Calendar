@@ -14,6 +14,7 @@ import { EventInput } from '@fullcalendar/react'
 import { db } from '../services/firebase/firebaseConfig';
 import Button from '@material-ui/core/Button'
 import AddIcon from '@material-ui/icons/Add';
+import AddEvent from './AddEvent';
 
 export default function Home() {
   let user: any;
@@ -175,14 +176,7 @@ export default function Home() {
       <>
         <div className='home-sidebar'>
           <div className='home-sidebar-section' style={{marginBottom: "10px"}}>
-            <Button
-              color="primary"
-              variant="contained"
-              style={{width:"100%"}}
-              startIcon={<AddIcon />}
-            >
-              Add Event
-            </Button>
+            <AddEvent />
           </div>
           <div className='home-sidebar-section'>
             <h4>My Events</h4>
