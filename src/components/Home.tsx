@@ -179,14 +179,14 @@ export default function Home() {
             <AddEvent />
           </div>
           <div className='home-sidebar-section'>
-            <h4>My Events</h4>
+            <h4>Upcoming Events</h4>
             <ul>
               {currentEvents.map(renderSidebarEvent)}
             </ul>
           </div>
-          <div className='home-sidebar-section'>
+          {/* <div className='home-sidebar-section'>
             <h4>My Calendars</h4>
-          </div>
+          </div> */}
         </div>
       </>
     )
