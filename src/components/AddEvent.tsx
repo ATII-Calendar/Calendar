@@ -33,41 +33,16 @@ export function AddEventDialog({ onClose, selectedValue, open, start, end }: any
   };
 
   const addEvent = (e: any) => {
-    console.log(startTime);
-    let startHours, startMins, endHours, endMins
-    if (startTime) {
-      // @ts-ignore
-      startHours = parseInt(startTime.substring(0, 2));
-      // @ts-ignore
-      startMins = parseInt(startTime.substring(4, 6));
+    console.log(startDate, endDate)
+    let endStr, startStr = `${startDate}T${startTime}-0000`;
+    let _endDate, _startDate = new Date(startStr);
+    if (endDate && endTime) {
+      endStr = `${endDate}T${endTime}-0000`;
+      _endDate = new Date(endStr);
     }
-    if (endTime) {
-      // @ts-ignore
-      endHours = parseInt(endTime.substring(0, 2));
-      // @ts-ignore
-      endMins = parseInt(endTime.substring(4, 6));
-    }
-
-    // @ts-ignore
-    let _startDate = new Date(startDate);
-    // @ts-ignore
-    if (startHours && startMins) {
-      _startDate.setHours(startHours);
-      _startDate.setMinutes(startMins);
-    }
-    // @ts-ignore
-    let _endDate = new Date(endDate);
-    // @ts-ignore
-    if (endHours && endMins) {
-      _endDate.setHours(endHours);
-      _endDate.setMinutes(endMins);
-    }
-
-    console.log(_startDate)
-    console.log(_endDate)
-
     let allDay = false;
-    if (!endDate) allDay = true;
+
+    console.log(startStr, endStr);
 
     // @ts-ignore
     addUserEvent(user.uid, title, _startDate ? _startDate : null,
