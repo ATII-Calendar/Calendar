@@ -5,16 +5,13 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import iCalendarPlugin from '@fullcalendar/icalendar'
-import { createEventId } from './event-utils'
 import { Redirect } from 'react-router-dom'
 import Header from './Header'
 import {addUserEvent} from '../services/firebase/databaseService'
 import { useUserValue } from '../contexts/userContext'
 import { EventInput } from '@fullcalendar/react'
 import { db } from '../services/firebase/firebaseConfig';
-import Button from '@material-ui/core/Button'
-import AddIcon from '@material-ui/icons/Add';
-import AddEvent from './AddEvent';
+import AddEvent, { AddEventDialog } from './AddEvent';
 
 export default function Home() {
   let user: any;
@@ -33,6 +30,10 @@ export default function Home() {
 
   let [events, setEvents] = useState([]);
   let [eventsLoaded, setEventsLoaded] = useState(false);
+
+  let [ dialogOpen, setDialogOpen ] = useState(false);
+  let [ startStr, setStartStr ] = useState(null);
+  let [ endStr, setEndStr ] = useState(null);
 
   useEffect(() => {
     if (user) {
@@ -114,36 +115,25 @@ export default function Home() {
   }
 
   async function RetrieveEvents() {
-    let events:EventInput[] = []
-
-
-    if (globalEvents == null){
-      let x = 0;
-
+      let _events:EventInput[] = []
       if (user != null) {
         await db.collection('test_collection').doc(user.uid).collection('events').get()
           .then((querySnapshot) => {querySnapshot.forEach((doc => {
             let data = doc.data();
-            events[x] = {
+            console.log(data);
+            _events.push({
               id:doc.id, title:String(data.title),
               start: toDateTime(data.start.seconds),
               end: toDateTime(data.end.seconds),
               allDay: data.allDay
-          }
+          })
         })
       )})
-
-      globalEvents = events
     }
 
-  }
-  else {
-    events = globalEvents
+    console.log(_events)
 
-  }
-    console.log(events)
-
-    return events;
+    return _events;
   }
 
   function renderEventContent(eventContent: EventContentArg) {
@@ -193,23 +183,15 @@ export default function Home() {
   }
 
   let handleDateSelect = (selectInfo: DateSelectArg) => {
-    let title = prompt('Please enter a new title for your event')
     let calendarApi = selectInfo.view.calendar
-
     calendarApi.unselect() // clear date selection
 
-    if (title) {
-      //let testEvent = new Event(title, new Date(selectInfo.startStr), new Date(selectInfo.endStr), selectInfo.allDay)
-      let testUID = String(user.uid)
-      addUserEvent(testUID, title, new Date(selectInfo.startStr), new Date(selectInfo.endStr), selectInfo.allDay)
-      calendarApi.addEvent({
-        id: createEventId(),
-        title,
-        start: selectInfo.startStr,
-        end: selectInfo.endStr,
-        allDay: selectInfo.allDay
-      })
-    }
+    // @ts-ignore
+    setDialogOpen(true)
+    // @ts-ignore
+    setStartStr(selectInfo.startStr);
+    // @ts-ignore
+    setEndStr(selectInfo.endStr);
   }
 
   // TODO proper deletions (remove events from the API)
@@ -234,6 +216,9 @@ export default function Home() {
   return (
     <> { user ?
       <div className='home'>
+        <AddEventDialog start={startStr} end={endStr} open={dialogOpen}
+          onClose={() => {setDialogOpen(false)}}/>
+
         <Header showSidebar={showSidebar} setShowSidebar={setShowSidebar} calRef={calRef}/>
         <div className='home-body'>
           {showSidebar && renderSidebar()}
