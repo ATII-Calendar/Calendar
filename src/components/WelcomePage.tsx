@@ -21,7 +21,7 @@ export default function WelcomePage() {
     userSettings = state.userSettings;
   }
 
-  function buttonClick() {
+  function continueBtn(e: any) {
     if (userSettings) {
       dispatch({ type: actions.SET_USER_SETTINGS, userSettings: {
         ...userSettings,
@@ -32,7 +32,9 @@ export default function WelcomePage() {
         classes: classList
       }});
     }
+    // TODO: update database
     history.push("/home");
+    e.preventDefault();
   }
 
   function classInputted(value: string, index: number){
@@ -61,7 +63,7 @@ export default function WelcomePage() {
             )
           })}
         </ul>
-        <Button color="primary" variant="contained" style={{marginLeft: '42%', height: 50, width: 250, textAlign:'center', float: 'initial'}} onClick={() => buttonClick()}>
+        <Button color="primary" variant="contained" style={{marginLeft: '42%', height: 50, width: 250, textAlign:'center', float: 'initial'}} onClick={continueBtn}>
             Continue
         </Button>
       </div>

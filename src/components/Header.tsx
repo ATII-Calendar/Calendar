@@ -129,7 +129,7 @@ export default function Header({ showSidebar, setShowSidebar, calRef }: any): JS
           <MenuItem onClick={() => {
             history.push("/settings");
             handleClose();
-          }}>Settings</MenuItem>
+          }}>Schedule</MenuItem>
           <MenuItem onClick={handleClose}>Help</MenuItem>
           <MenuItem onClick={() => {
             signOut();
