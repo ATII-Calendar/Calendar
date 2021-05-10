@@ -1,27 +1,42 @@
-import React, { Component } from 'react';
+import { Button } from '@material-ui/core';
+import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 
-class Counter extends Component { 
-  state = {
-    name: 'Admin',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/1/1a/Rye_Country_Day_School_logo.jpg'
-  };
+export default function Adminui() { 
 
-  render()
+  let day1 = new Date(2022, 9, 5)
+  let history = useHistory();
+
+  // to be implemented, to add inputted off days into a list.
+  function offDays() 
   {
-    return (
-    <div>
-      <img src={this.state.imageUrl} alt =""/>
-      <span> <h1> Hello {this.state.name}! </h1> </span>
-      <button> Change schedule </button>
-      <div>
-        <button> Email faculty </button>
-      </div>
-      <button> Email student body </button>
-    </div>
-    );
+
   }
 
+  function buttonClick()
+  {
+    
+  }
 
+  function buttonClick3()
+  {
+    history.push("/hello");
+  }
+
+  // fix onChange for each I think
+  return (
+   <div>
+     <span> <h1> Hello admin! </h1> </span>
+     <input style={{fontSize: 25, padding: '10px'}} type="date" placeholder="Start Date" onChange={item => day1}/>
+     <Button color="primary" variant="contained" style={{marginLeft: '0', height: 50, width: 250, textAlign:'center', float: 'initial'}} onClick={() => buttonClick()}> 
+      Set day 1
+      </Button>
+      <div>
+      </div>
+      <input style={{fontSize: 25, padding: '10px'}} type="date" placeholder="Off day" onChange={item => day1}/>
+      <Button color="primary" variant="contained" style={{marginLeft: '0%', height: 50, width: 250, textAlign:'center', float: 'initial'}} onClick={() => buttonClick3()}> 
+      Add days off
+      </Button>
+   </div>
+   );
 }
-
-export default Counter;
