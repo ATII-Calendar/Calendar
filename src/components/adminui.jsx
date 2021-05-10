@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 export default function Adminui() { 
-
+  
   let day1 = new Date(2022, 9, 5)
   let history = useHistory();
   let offDays  = [Date(2022, 7, 4)];
@@ -12,6 +12,7 @@ export default function Adminui() {
   let [list, setList] = React.useState(offDays);
   let [date, setDate] = React.useState('');
 
+  // handleChange and handleAdd for adding daysOff
   function handleChange(event) 
   {
     setDate(event.target.value);
@@ -24,6 +25,7 @@ export default function Adminui() {
     setList(newList);
   }
 
+  // handleChange and handleAdd for updating the first day
   function handleChange2(event) 
   {
     setInitialDate(event.target.value);
@@ -34,7 +36,7 @@ export default function Adminui() {
     day1 = initialDate;
   }
 
-  // fix onChange for each I think
+  // the user interface with two input fields and two buttons
   return (
    <div>
      <span> <h1> Hello admin! </h1> </span>
