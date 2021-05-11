@@ -34,7 +34,7 @@ export default function Home() {
   let [ dialogOpen, setDialogOpen ] = useState(false);
   let [ startStr, setStartStr ] = useState(null);
   let [ endStr, setEndStr ] = useState(null);
-
+  // checks for already created events when a user logs in
   useEffect(() => {
     if (user) {
       RetrieveEvents().then(events => {
@@ -92,7 +92,7 @@ export default function Home() {
             endTime.setMinutes(endTimes[j][1]);
 
             events.push({
-              // the most beautiful expresison you've ever seen:
+              // the most beautiful expression you've ever seen:
               title: userSettings.classes[cycle[cycleDay-1][j]] ?
                   userSettings.classes[cycle[cycleDay-1][j]] :
                   blocks[cycle[cycleDay-1][j]] + ' block',
@@ -114,8 +114,13 @@ export default function Home() {
     return events;
   }
 
+  // function that checks for the user's preexisting events
   async function RetrieveEvents() {
-      let _events:EventInput[] = []
+
+    let events:EventInput[] = []
+
+    if (globalEvents == null){
+      let x = 0;
       if (user != null) {
         await db.collection('test_collection').doc(user.uid).collection('events').get()
           .then((querySnapshot) => {querySnapshot.forEach((doc => {
@@ -136,6 +141,7 @@ export default function Home() {
     return _events;
   }
 
+  // styling for event content (bold/italics)
   function renderEventContent(eventContent: EventContentArg) {
     return (
       <>
@@ -159,7 +165,7 @@ export default function Home() {
     }
   }
 
-  // definition of the sidebar
+  // definition of the sidebar interface
   // maybe move this to its own component
   function renderSidebar() {
     return (
@@ -181,6 +187,8 @@ export default function Home() {
       </>
     )
   }
+
+  // adds an event onto the calendar, allows for title of event and duration
 
   let handleDateSelect = (selectInfo: DateSelectArg) => {
     let calendarApi = selectInfo.view.calendar
