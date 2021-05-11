@@ -10,7 +10,11 @@ import { BrowserRouter } from 'react-router-dom';
 import UserSettings from './components/UserSettings';
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
+import { db } from './services/firebase/firebaseConfig';
+import { actionTypes as actions } from './reducer'
 
+
+//Creates the theme for the application
 const theme = createMuiTheme({
   palette: {
     secondary: {
@@ -20,18 +24,22 @@ const theme = createMuiTheme({
 });
 
 function App() {
+  //Defining variables
   let user: any;
   let userState = useUserValue().state;
   if (userState) {
     user = userState.user;
   }
-
   return (
+    //Sets the theme
     <ThemeProvider theme={theme}>
     <BrowserRouter>
       <Route exact path="/">
+      //If the user is defined (through session persistence) then go straight to welcome
         { user ? <Redirect to="/welcome"/>
         : <Redirect to="/signin"/> }
+        //Determines the routing ourder
+
       </Route>
       <Route exact path="/welcome" render={() => <WelcomePage/>}/>
       <Route exact path="/home" render={() => <Home/>}/>

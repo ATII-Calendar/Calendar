@@ -17,7 +17,7 @@ import AddIcon from '@material-ui/icons/Add';
 
 export default function Home() {
   let user: any;
-  let userSettings: any; 
+  let userSettings: any;
   let userState = useUserValue().state;
   if (userState) {
     user = userState.user;
@@ -58,7 +58,7 @@ export default function Home() {
   function calculateCycle() {
     let cycleDay = 1;
     let date = new Date();
-    let events = [];
+    let events: any[] = [];
 
     const blocks = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
 
@@ -78,7 +78,7 @@ export default function Home() {
     let endTimes = [
       [10, 20], [12, 10], [14, 0], [3, 30], [4, 20]
     ]
-
+    console.log(userSettings)
     for (let i = 0; i < 14; i++) {
         if (date.getDay() !== 0 && date.getDay() !== 6) {
           for (let j = 0; j < 5; j++) {
@@ -92,18 +92,25 @@ export default function Home() {
 
             events.push({
               // the most beautiful expression you've ever seen:
+              //@ts-ignore
               title: userSettings.classes[cycle[cycleDay-1][j]] ?
                   userSettings.classes[cycle[cycleDay-1][j]] :
                   blocks[cycle[cycleDay-1][j]] + ' block',
+              //@ts-ignore
               start: startTime,
+              //@ts-ignore
               end: endTime,
+              //@ts-ignore
               display: 'background',
             });
           }
 
           events.push({
+            //@ts-ignore
             allDay: true,
+            //@ts-ignore
             title: `Day ${cycleDay}`,
+            //@ts-ignore
             start: date,
           });
           cycleDay = ((cycleDay++) % 6) + 1;
