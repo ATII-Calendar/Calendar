@@ -5,6 +5,7 @@ import Header from './Header';
 import { actionTypes as actions } from '../reducer'
 import { useHistory } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
+import { db } from '../services/firebase/firebaseConfig';
 
 export default function UserSettings() {
   let history = useHistory();
@@ -27,7 +28,17 @@ export default function UserSettings() {
         classes: classList
       }})
     }
-    // TODO: update database
+    db.collection('test_collection').doc(user.uid).collection('settings').doc('classes').set({
+      A: classList[0],
+      B: classList[1],
+      C: classList[2],
+      D: classList[3],
+      E: classList[4],
+      F: classList[5],
+      G: classList[6],
+      H: classList[7],
+      I: classList[8],
+    })
     event.preventDefault();
   }
 

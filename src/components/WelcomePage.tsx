@@ -6,11 +6,12 @@ import { useHistory } from 'react-router-dom';
 import { useUserValue } from '../contexts/userContext';
 import { actionTypes as actions } from '../reducer'
 import Header from './Header';
+import { db } from '../services/firebase/firebaseConfig';
 
 const blocks = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
 
 export default function WelcomePage() {
-  let [classList, setClassList] = useState(new Array(blocks.length));
+  let [classList, setClassList] = useState(new Array(blocks.length).fill(""));
   let history = useHistory();
 
   let user: any;
@@ -33,6 +34,17 @@ export default function WelcomePage() {
       }});
     }
     // TODO: update database
+    db.collection('test_collection').doc(user.uid).collection('settings').doc('classes').set({
+      A: classList[0],
+      B: classList[1],
+      C: classList[2],
+      D: classList[3],
+      E: classList[4],
+      F: classList[5],
+      G: classList[6],
+      H: classList[7],
+      I: classList[8],
+    })
     history.push("/home");
     e.preventDefault();
   }
@@ -46,6 +58,10 @@ export default function WelcomePage() {
   return (
     <div>
       {!user && history.push("/signin") /* go to signin if there is no logged in user */ }
+      {
+        /* redirect home if there are already classes */
+        (userSettings && userSettings.classes) && history.push("/home")
+      }
       <Header />
       <h1 style = {{fontSize: 60, textAlign: 'center'}}>Welcome!</h1>
       <div>

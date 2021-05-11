@@ -22,7 +22,6 @@ export default function Home() {
   if (userState) {
     user = userState.user;
     userSettings = userState.userSettings;
-    console.log(userSettings);
   }
 
   let calRef = useRef<FullCalendar | null>(null);
