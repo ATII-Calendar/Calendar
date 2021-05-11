@@ -5,15 +5,13 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import iCalendarPlugin from '@fullcalendar/icalendar'
-import { createEventId } from './event-utils'
 import { Redirect } from 'react-router-dom'
 import Header from './Header'
 import {addUserEvent} from '../services/firebase/databaseService'
 import { useUserValue } from '../contexts/userContext'
 import { EventInput } from '@fullcalendar/react'
 import { db } from '../services/firebase/firebaseConfig';
-import Button from '@material-ui/core/Button'
-import AddIcon from '@material-ui/icons/Add';
+import AddEvent, { AddEventDialog } from './AddEvent';
 
 export default function Home() {
   let user: any;
@@ -33,6 +31,9 @@ export default function Home() {
   let [events, setEvents] = useState([]);
   let [eventsLoaded, setEventsLoaded] = useState(false);
 
+  let [ dialogOpen, setDialogOpen ] = useState(false);
+  let [ startStr, setStartStr ] = useState(null);
+  let [ endStr, setEndStr ] = useState(null);
   // checks for already created events when a user logs in
   useEffect(() => {
     if (user) {
@@ -115,35 +116,29 @@ export default function Home() {
 
   // function that checks for the user's preexisting events
   async function RetrieveEvents() {
+
     let events:EventInput[] = []
 
     if (globalEvents == null){
       let x = 0;
-
       if (user != null) {
         await db.collection('test_collection').doc(user.uid).collection('events').get()
           .then((querySnapshot) => {querySnapshot.forEach((doc => {
             let data = doc.data();
-            events[x] = {
+            console.log(data);
+            _events.push({
               id:doc.id, title:String(data.title),
               start: toDateTime(data.start.seconds),
               end: toDateTime(data.end.seconds),
               allDay: data.allDay
-          }
+          })
         })
       )})
-
-      globalEvents = events
     }
 
-  }
-  else {
-    events = globalEvents
+    console.log(_events)
 
-  }
-    console.log(events)
-
-    return events;
+    return _events;
   }
 
   // styling for event content (bold/italics)
@@ -177,24 +172,17 @@ export default function Home() {
       <>
         <div className='home-sidebar'>
           <div className='home-sidebar-section' style={{marginBottom: "10px"}}>
-            <Button
-              color="primary"
-              variant="contained"
-              style={{width:"100%"}}
-              startIcon={<AddIcon />}
-            >
-              Add Event
-            </Button>
+            <AddEvent />
           </div>
           <div className='home-sidebar-section'>
-            <h4>My Events</h4>
+            <h4>Upcoming Events</h4>
             <ul>
               {currentEvents.map(renderSidebarEvent)}
             </ul>
           </div>
-          <div className='home-sidebar-section'>
+          {/* <div className='home-sidebar-section'>
             <h4>My Calendars</h4>
-          </div>
+          </div> */}
         </div>
       </>
     )
@@ -203,23 +191,15 @@ export default function Home() {
   // adds an event onto the calendar, allows for title of event and duration
 
   let handleDateSelect = (selectInfo: DateSelectArg) => {
-    let title = prompt('Please enter a new title for your event')
     let calendarApi = selectInfo.view.calendar
-
     calendarApi.unselect() // clear date selection
 
-    if (title) {
-      //let testEvent = new Event(title, new Date(selectInfo.startStr), new Date(selectInfo.endStr), selectInfo.allDay)
-      let testUID = String(user.uid)
-      addUserEvent(testUID, title, new Date(selectInfo.startStr), new Date(selectInfo.endStr), selectInfo.allDay)
-      calendarApi.addEvent({
-        id: createEventId(),
-        title,
-        start: selectInfo.startStr,
-        end: selectInfo.endStr,
-        allDay: selectInfo.allDay
-      })
-    }
+    // @ts-ignore
+    setDialogOpen(true)
+    // @ts-ignore
+    setStartStr(selectInfo.startStr);
+    // @ts-ignore
+    setEndStr(selectInfo.endStr);
   }
 
   // TODO proper deletions (remove events from the API)
@@ -244,6 +224,9 @@ export default function Home() {
   return (
     <> { user ?
       <div className='home'>
+        <AddEventDialog start={startStr} end={endStr} open={dialogOpen}
+          onClose={() => {setDialogOpen(false)}}/>
+
         <Header showSidebar={showSidebar} setShowSidebar={setShowSidebar} calRef={calRef}/>
         <div className='home-body'>
           {showSidebar && renderSidebar()}

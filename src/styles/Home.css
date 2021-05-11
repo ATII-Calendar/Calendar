@@ -33,3 +33,31 @@
   border-color: #dddddd;
   max-width: 20vw;
 }
+
+.datetimepicker {
+  display: flex;
+  flex-direction: row;
+}
+
+.section {
+  padding: 10px 0;
+}
+
+#startDate, #endDate,
+#startDate:focus, #endDate:focus {
+  width: 100%;
+  padding: 10px;
+  border: solid 1px black;
+  border-right: none;
+  outline: none;
+}
+
+#startTime, #endTime,
+#startTime:focus, #endTime:focus {
+  width: 100%;
+  padding: 10px;
+  border: solid 1px black;
+  border-left: none;
+  outline: none;
+}
+
