@@ -7,7 +7,6 @@ import interactionPlugin from '@fullcalendar/interaction'
 import iCalendarPlugin from '@fullcalendar/icalendar'
 import { Redirect } from 'react-router-dom'
 import Header from './Header'
-import {addUserEvent} from '../services/firebase/databaseService'
 import { useUserValue } from '../contexts/userContext'
 import { EventInput } from '@fullcalendar/react'
 import { db } from '../services/firebase/firebaseConfig';
@@ -119,26 +118,26 @@ export default function Home() {
 
     let events:EventInput[] = []
 
-    if (globalEvents == null){
-      let x = 0;
+    if (globalEvents == null) {
       if (user != null) {
         await db.collection('test_collection').doc(user.uid).collection('events').get()
           .then((querySnapshot) => {querySnapshot.forEach((doc => {
             let data = doc.data();
             console.log(data);
-            _events.push({
+            events.push({
               id:doc.id, title:String(data.title),
               start: toDateTime(data.start.seconds),
               end: toDateTime(data.end.seconds),
               allDay: data.allDay
+            })
           })
-        })
-      )})
+        )})
+      }
     }
 
-    console.log(_events)
+    console.log(events)
 
-    return _events;
+    return events;
   }
 
   // styling for event content (bold/italics)
