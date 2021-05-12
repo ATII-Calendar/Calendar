@@ -13,6 +13,7 @@ import { db } from '../services/firebase/firebaseConfig';
 import AddEvent, { AddEventDialog } from './AddEvent';
 
 export default function Home() {
+  // global state
   let user: any;
   let userSettings: any; 
   let userState = useUserValue().state;
@@ -21,18 +22,26 @@ export default function Home() {
     userSettings = userState.userSettings;
   }
 
+  // local state
+  // calRef: allows us to interact with the FullCalendar API
   let calRef = useRef<FullCalendar | null>(null);
-  let globalEvents:any = null;
+  // a toggle we are not using right now, but would allow for the user to
+  // toggle on/off weekends
   let [weekendsVisible, setWeekendsVisible] = useState(true);
   let [currentEvents, setCurrentEvents] = useState([]);
   let [showSidebar, setShowSidebar] = useState(true);
 
-  let [events, setEvents] = useState([]);
+  // used to make sure the calendar isn't rendered until events are fetched
   let [eventsLoaded, setEventsLoaded] = useState(false);
 
+  // used to manage adding events
+  // dialogOpen is for opening and closing the popup, and startStr and endStr
+  // are for passing information to the dialog if the user triggers the dialog
+  // via the draggin interface
   let [ dialogOpen, setDialogOpen ] = useState(false);
   let [ startStr, setStartStr ] = useState(null);
   let [ endStr, setEndStr ] = useState(null);
+
   // checks for already created events when a user logs in
   useEffect(() => {
     if (user) {
@@ -118,24 +127,25 @@ export default function Home() {
 
     let events:EventInput[] = []
 
-    if (globalEvents == null) {
-      if (user != null) {
-        await db.collection('test_collection').doc(user.uid).collection('events').get()
-          .then((querySnapshot) => {querySnapshot.forEach((doc => {
-            let data = doc.data();
-            console.log(data);
-            events.push({
-              id:doc.id, title:String(data.title),
-              start: toDateTime(data.start.seconds),
-              end: toDateTime(data.end.seconds),
-              allDay: data.allDay
-            })
+    // load the user's events if they are logged in
+    // this check isn't strictly necessary because the component should
+    // redirect away immediately if there is no user, but if this function
+    // get's called before the redirect occurs, this will ensure that there
+    // are no errors
+    if (user !== null) {
+      await db.collection('test_collection').doc(user.uid).collection('events').get()
+        .then((querySnapshot) => {querySnapshot.forEach((doc => {
+          let data = doc.data();
+          console.log(data);
+          events.push({
+            id:doc.id, title:String(data.title),
+            start: toDateTime(data.start.seconds),
+            end: toDateTime(data.end.seconds),
+            allDay: data.allDay
           })
-        )})
-      }
+        })
+      )})
     }
-
-    console.log(events)
 
     return events;
   }
@@ -170,6 +180,8 @@ export default function Home() {
     return (
       <>
         <div className='home-sidebar'>
+          <AddEventDialog start={startStr} end={endStr} open={dialogOpen}
+            onClose={() => {setDialogOpen(false)}}/>
           <div className='home-sidebar-section' style={{marginBottom: "10px"}}>
             <AddEvent />
           </div>
@@ -179,16 +191,12 @@ export default function Home() {
               {currentEvents.map(renderSidebarEvent)}
             </ul>
           </div>
-          {/* <div className='home-sidebar-section'>
-            <h4>My Calendars</h4>
-          </div> */}
         </div>
       </>
     )
   }
 
   // adds an event onto the calendar, allows for title of event and duration
-
   let handleDateSelect = (selectInfo: DateSelectArg) => {
     let calendarApi = selectInfo.view.calendar
     calendarApi.unselect() // clear date selection
@@ -216,15 +224,20 @@ export default function Home() {
     setCurrentEvents(events)
   }
 
+  // helper function to combine the results of `RetrieveEvents` and `calculateCycle`
   async function getEvents() {
     return RetrieveEvents().then(events => { return [...events, ...calculateCycle()] })
   }
 
+  // outline
+  // (redirects to /signin if there is no user)
+  // main div
+  // |- render the sidebar if it is toggled
+  // |- main body of the page
+  // |  |- render the calendar once events are loaded from the API
   return (
     <> { user ?
       <div className='home'>
-        <AddEventDialog start={startStr} end={endStr} open={dialogOpen}
-          onClose={() => {setDialogOpen(false)}}/>
 
         <Header showSidebar={showSidebar} setShowSidebar={setShowSidebar} calRef={calRef}/>
         <div className='home-body'>
