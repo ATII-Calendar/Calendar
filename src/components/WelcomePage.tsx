@@ -13,6 +13,7 @@ export default function WelcomePage() {
   let [classList, setClassList] = useState(new Array(blocks.length));
   let history = useHistory();
 
+  // global state: the user as well as userSettings
   let user: any;
   let userSettings: any;
   let { state, dispatch } = useUserValue();
@@ -21,7 +22,10 @@ export default function WelcomePage() {
     userSettings = state.userSettings;
   }
 
-  function buttonClick() {
+  // update classes before going to home
+  function goToHome() {
+    // if there are userSettings saved maintain them and only update the
+    // classes array
     if (userSettings) {
       dispatch({ type: actions.SET_USER_SETTINGS, userSettings: {
         ...userSettings,
@@ -35,12 +39,23 @@ export default function WelcomePage() {
     history.push("/home");
   }
 
+  // update local state whenever the user updates one of the inputs
   function classInputted(value: string, index: number){
     let newClassList = [...classList];
     newClassList[index] = value;
     setClassList(newClassList);
   }
 
+  // outline
+  //
+  // Component
+  // |- check for logged in user
+  // |- the header
+  // |- the title
+  // |- the body of the page (the div)
+  // |  |- description text
+  //    |- iterating over all the blocks and adding a label and input
+  //    |- continue button
   return (
     <div>
       {!user && history.push("/signin") /* go to signin if there is no logged in user */ }
@@ -61,7 +76,7 @@ export default function WelcomePage() {
             )
           })}
         </ul>
-        <Button color="primary" variant="contained" style={{marginLeft: '42%', height: 50, width: 250, textAlign:'center', float: 'initial'}} onClick={() => buttonClick()}>
+        <Button color="primary" variant="contained" style={{marginLeft: '42%', height: 50, width: 250, textAlign:'center', float: 'initial'}} onClick={() => goToHome()}>
             Continue
         </Button>
       </div>
