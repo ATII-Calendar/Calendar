@@ -21,9 +21,12 @@ const theme = createMuiTheme({
 
 function App() {
   let user: any;
+  let userSettings: { class: string[] };
   let userState = useUserValue().state;
   if (userState) {
     user = userState.user;
+    userSettings = userState.settings || null
+    console.log(userSettings);
   }
 
   return (

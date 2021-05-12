@@ -33,7 +33,6 @@ export default function WelcomePage() {
         classes: classList
       }});
     }
-    // TODO: update database
     db.collection('test_collection').doc(user.uid).collection('settings').doc('classes').set({
       A: classList[0],
       B: classList[1],
@@ -59,8 +58,9 @@ export default function WelcomePage() {
     <div>
       {!user && history.push("/signin") /* go to signin if there is no logged in user */ }
       {
-        /* redirect home if there are already classes */
-        (userSettings && userSettings.classes) && history.push("/home")
+        userSettings
+        && userSettings._classes
+        && history.push("/home")
       }
       <Header />
       <h1 style = {{fontSize: 60, textAlign: 'center'}}>Welcome!</h1>
@@ -74,7 +74,11 @@ export default function WelcomePage() {
             return (
               <div style={{textAlign: 'center', margin: '5px'}} key={index}>
                 <span style = {{fontSize: 25, alignSelf: 'center'}}>{block}<a style={{marginRight: '5.0rem'}}></a></span>{" "}
-                <input style={{fontSize: 25, padding: '10px', borderWidth: 0, borderBottomWidth: 2}} type="text" placeholder="class name" onChange={item => classInputted(item.target.value, index)}/>
+                <input style={{fontSize: 25, padding: '10px', borderWidth: 0, borderBottomWidth: 2}}
+                  type="text" placeholder="class name"
+                  onChange={item => classInputted(item.target.value, index)}
+                  value={classList[index]}
+                />
               </div>
             )
           })}
