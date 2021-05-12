@@ -41,6 +41,7 @@ export default function UserSettings() {
       I: classList[8],
     })
     event.preventDefault();
+    history.push('/home');
   }
 
   // helper function for updating input values
@@ -68,7 +69,6 @@ export default function UserSettings() {
             )
           })}
           <Button type="submit" variant="contained" color="primary">Save Changes</Button>
-          <Button variant="contained" color="secondary" onClick={() => history.push("/home")}>Cancel</Button>
           </form>
         </div>
       </>
