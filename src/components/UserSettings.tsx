@@ -6,6 +6,7 @@ import { actionTypes as actions } from '../reducer'
 import { useHistory } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import { db } from '../services/firebase/firebaseConfig';
+import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace';
 
 export default function UserSettings() {
   let history = useHistory();
@@ -79,6 +80,12 @@ export default function UserSettings() {
     <Header />
     <div className="user-settings">
       <div className="user-settings-body">
+        <Button
+          startIcon={<KeyboardBackspaceIcon />}
+          onClick={() => history.push("/home")}
+          size="small"
+          style={{borderRadius: '50px', padding: '5px 15px', margin: '5px'}}
+        > back to home </Button>
         { scheduleSettings() }
       </div>
     </div> </> : history.push("/signin") }
