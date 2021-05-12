@@ -8,13 +8,10 @@ import { DialogContent } from '@material-ui/core';
 import {addUserEvent} from '../services/firebase/databaseService'
 import { useUserValue } from '../contexts/userContext';
 
-export interface SimpleDialogProps {
-  open: boolean;
-  selectedValue: string;
-  onClose: (value: string) => void;
-}
-
+// Component that is just the dialog – separated so that we can give it params
+// and give inputs initial values
 export function AddEventDialog({ onClose, selectedValue, open, start, end }: any) {
+  // variables that are assigned when inputs are modified (title, date, etc)
   let [title, setTitle] = useState("");
   let [description, setDescription] = useState("");
   let [startDate, setStartDate] = useState("");
@@ -22,13 +19,19 @@ export function AddEventDialog({ onClose, selectedValue, open, start, end }: any
   let [startTime, setStartTime] = useState("");
   let [endTime, setEndTime] = useState("");
 
+  // global state: the current user
   let user: any;
   let userState = useUserValue().state;
   if (userState) {
     user = userState.user;
   }
 
+  // useEffect with no second param --> code will run when component is first
+  // loaded
+  // we use this to see if the component was called via the dragging interface
+  // so that we can give variables initial times
   useEffect(() => {
+    // parsing date information (not fun)
     if (start) {
       if (start.indexOf("T") !== -1) {
         setStartDate(start.substring(0, start.indexOf("T")));
@@ -53,8 +56,9 @@ export function AddEventDialog({ onClose, selectedValue, open, start, end }: any
     onClose(selectedValue);
   };
 
+  // combines the strings provided by the inputs before determining if the event
+  // is an all-day event and then pushes the event to the database
   const addEvent = (e: any) => {
-    console.log(startDate, endDate)
     let endStr, startStr = `${startDate}T${startTime}-0000`;
     let _endDate, _startDate = new Date(startStr);
     if (endDate && endTime) {
@@ -62,8 +66,6 @@ export function AddEventDialog({ onClose, selectedValue, open, start, end }: any
       _endDate = new Date(endStr);
     }
     let allDay = false;
-
-    console.log(startStr, endStr);
 
     // @ts-ignore
     addUserEvent(user.uid, title, _startDate ? _startDate : null,
@@ -73,6 +75,24 @@ export function AddEventDialog({ onClose, selectedValue, open, start, end }: any
     e.preventDefault();
   }
 
+  // basic structure (since commenting within jsx is more of a pain than it is
+  // worth
+  //
+  // there's no good way to document css because it's not a good language
+  //
+  // Dialog stuff (to be handled by material-ui
+  // |- Title of modal
+  // |- input for event title
+  // |- input for description
+  // |- section (for start date and time)
+  // |  |- datetimepicker
+  // |     |- input for date
+  // |     |- input for time
+  // |- section (for end date and time)
+  // |  |- same as start date/time section
+  // |- DialogActions
+  // |  |- Cancel button
+  // |  |- Save button
   return (
     <Dialog open={open}>
       <DialogTitle id="simple-dialog-title">Add Event</DialogTitle>
@@ -108,6 +128,9 @@ export function AddEventDialog({ onClose, selectedValue, open, start, end }: any
   );
 }
 
+// component with button to launch the dialog – this is what we use in the 
+// sidebar. the whole thing can't be one component so that the dragging
+// interface doesn't add a random button to the UI
 export default function AddEvent() {
   const [open, setOpen] = useState(false);
 
