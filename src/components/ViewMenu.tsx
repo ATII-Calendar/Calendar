@@ -26,6 +26,8 @@ const StyledMenu = withStyles({
   />
 ));
 
+// we override/add on top of the theme for this component so that the currently
+// selected view is highlighted yellow with black text
 const useStyles = makeStyles((theme) => ({
   activeSelection: { 
     backgroundColor: theme.palette.secondary.main,
@@ -45,10 +47,14 @@ export default function ViewMenu({ calRef, currentView, setCurrentView }: any) {
     setAnchorEl(null);
   };
 
+  // uses the FullCalendar API to change the calendar's view based on the
+  // user's selection
   const handleSelection = (selection: string) => {
     setCurrentView(selection);
     let api = calRef.current.getApi();
 
+    // FullCalendar's views are named and managed with strings which results
+    // in this logic
     if (selection !== 'Month') api.changeView("timeGrid" + selection);
     else api.changeView("dayGrid" + selection);
 

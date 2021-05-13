@@ -14,6 +14,7 @@ export default function WelcomePage() {
   let [classList, setClassList] = useState(new Array(blocks.length).fill(""));
   let history = useHistory();
 
+  // global state: the user as well as userSettings
   let user: any;
   let userSettings: any;
   let { state, dispatch } = useUserValue();
@@ -23,6 +24,8 @@ export default function WelcomePage() {
   }
 
   function continueBtn(e: any) {
+    // if there are userSettings saved maintain them and only update the
+    // classes array
     if (userSettings) {
       dispatch({ type: actions.SET_USER_SETTINGS, userSettings: {
         ...userSettings,
@@ -48,12 +51,23 @@ export default function WelcomePage() {
     e.preventDefault();
   }
 
+  // update local state whenever the user updates one of the inputs
   function classInputted(value: string, index: number){
     let newClassList = [...classList];
     newClassList[index] = value;
     setClassList(newClassList);
   }
 
+  // outline
+  //
+  // Component
+  // |- check for logged in user
+  // |- the header
+  // |- the title
+  // |- the body of the page (the div)
+  // |  |- description text
+  //    |- iterating over all the blocks and adding a label and input
+  //    |- continue button
   return (
     <div>
       {!user && history.push("/signin") /* go to signin if there is no logged in user */ }

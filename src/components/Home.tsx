@@ -5,10 +5,8 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import iCalendarPlugin from '@fullcalendar/icalendar'
-import { createEventId } from './event-utils'
 import { Redirect } from 'react-router-dom'
 import Header from './Header'
-import {addUserEvent} from '../services/firebase/databaseService'
 import { useUserValue } from '../contexts/userContext'
 import { EventInput } from '@fullcalendar/react'
 import { db } from '../services/firebase/firebaseConfig';
@@ -16,7 +14,10 @@ import Button from '@material-ui/core/Button'
 import AddIcon from '@material-ui/icons/Add';
 import { actionTypes as actions } from '../reducer';
 
+import AddEvent, { AddEventDialog } from './AddEvent';
+
 export default function Home() {
+  // global state
   let user: any;
   let userSettings: any; 
   let userState = useUserValue().state;
@@ -26,20 +27,31 @@ export default function Home() {
     userSettings = userState.userSettings;
   }
 
+  // local state
+  // calRef: allows us to interact with the FullCalendar API
   let calRef = useRef<FullCalendar | null>(null);
-  let globalEvents:any = null;
+  // a toggle we are not using right now, but would allow for the user to
+  // toggle on/off weekends
   let [weekendsVisible, setWeekendsVisible] = useState(true);
   let [currentEvents, setCurrentEvents] = useState([]);
   let [showSidebar, setShowSidebar] = useState(true);
 
-  let [events, setEvents] = useState([]);
+  // used to make sure the calendar isn't rendered until events are fetched
   let [eventsLoaded, setEventsLoaded] = useState(false);
 
+  // used to manage adding events
+  // dialogOpen is for opening and closing the popup, and startStr and endStr
+  // are for passing information to the dialog if the user triggers the dialog
+  // via the draggin interface
+  let [ dialogOpen, setDialogOpen ] = useState(false);
+  let [ startStr, setStartStr ] = useState(null);
+  let [ endStr, setEndStr ] = useState(null);
+
+  // checks for already created events when a user logs in
   useEffect(() => {
     if (user) {
       RetrieveEvents().then(events => {
         // @ts-ignore
-        setEvents([...events, ...calculateCycle()]);
         // @ts-ignore
         setCurrentEvents([...events, ...calculateCycle()]);
         setEventsLoaded(true);
@@ -108,7 +120,7 @@ export default function Home() {
             endTime.setMinutes(endTimes[j][1]);
 
             events.push({
-              // the most beautiful expresison you've ever seen:
+              // the most beautiful expression you've ever seen:
               title: userSettings.classes[cycle[cycleDay-1][j]] ?
                   userSettings.classes[cycle[cycleDay-1][j]] :
                   blocks[cycle[cycleDay-1][j]] + ' block',
@@ -130,39 +142,35 @@ export default function Home() {
     return events;
   }
 
+  // function that checks for the user's preexisting events
   async function RetrieveEvents() {
+
     let events:EventInput[] = []
 
-
-    if (globalEvents == null){
-      let x = 0;
-
-      if (user != null) {
-        await db.collection('test_collection').doc(user.uid).collection('events').get()
-          .then((querySnapshot) => {querySnapshot.forEach((doc => {
-            let data = doc.data();
-            events[x] = {
-              id:doc.id, title:String(data.title),
-              start: toDateTime(data.start.seconds),
-              end: toDateTime(data.end.seconds),
-              allDay: data.allDay
-          }
+    // load the user's events if they are logged in
+    // this check isn't strictly necessary because the component should
+    // redirect away immediately if there is no user, but if this function
+    // get's called before the redirect occurs, this will ensure that there
+    // are no errors
+    if (user !== null) {
+      await db.collection('test_collection').doc(user.uid).collection('events').get()
+        .then((querySnapshot) => {querySnapshot.forEach((doc => {
+          let data = doc.data();
+          console.log(data);
+          events.push({
+            id:doc.id, title:String(data.title),
+            start: toDateTime(data.start.seconds),
+            end: toDateTime(data.end.seconds),
+            allDay: data.allDay
+          })
         })
       )})
-
-      globalEvents = events
     }
-
-  }
-  else {
-    events = globalEvents
-
-  }
-    console.log(events)
 
     return events;
   }
 
+  // styling for event content (bold/italics)
   function renderEventContent(eventContent: EventContentArg) {
     return (
       <>
@@ -186,54 +194,39 @@ export default function Home() {
     }
   }
 
-  // definition of the sidebar
+  // definition of the sidebar interface
   // maybe move this to its own component
   function renderSidebar() {
     return (
       <>
         <div className='home-sidebar'>
+          <AddEventDialog start={startStr} end={endStr} open={dialogOpen}
+            onClose={() => {setDialogOpen(false)}}/>
           <div className='home-sidebar-section' style={{marginBottom: "10px"}}>
-            <Button
-              color="primary"
-              variant="contained"
-              style={{width:"100%"}}
-              startIcon={<AddIcon />}
-            >
-              Add Event
-            </Button>
+            <AddEvent />
           </div>
           <div className='home-sidebar-section'>
-            <h4>My Events</h4>
+            <h4>Upcoming Events</h4>
             <ul>
               {currentEvents.map(renderSidebarEvent)}
             </ul>
-          </div>
-          <div className='home-sidebar-section'>
-            <h4>My Calendars</h4>
           </div>
         </div>
       </>
     )
   }
 
+  // adds an event onto the calendar, allows for title of event and duration
   let handleDateSelect = (selectInfo: DateSelectArg) => {
-    let title = prompt('Please enter a new title for your event')
     let calendarApi = selectInfo.view.calendar
-
     calendarApi.unselect() // clear date selection
 
-    if (title) {
-      //let testEvent = new Event(title, new Date(selectInfo.startStr), new Date(selectInfo.endStr), selectInfo.allDay)
-      let testUID = String(user.uid)
-      addUserEvent(testUID, title, new Date(selectInfo.startStr), new Date(selectInfo.endStr), selectInfo.allDay)
-      calendarApi.addEvent({
-        id: createEventId(),
-        title,
-        start: selectInfo.startStr,
-        end: selectInfo.endStr,
-        allDay: selectInfo.allDay
-      })
-    }
+    // @ts-ignore
+    setDialogOpen(true)
+    // @ts-ignore
+    setStartStr(selectInfo.startStr);
+    // @ts-ignore
+    setEndStr(selectInfo.endStr);
   }
 
   // TODO proper deletions (remove events from the API)
@@ -251,13 +244,21 @@ export default function Home() {
     setCurrentEvents(events)
   }
 
+  // helper function to combine the results of `RetrieveEvents` and `calculateCycle`
   async function getEvents() {
     return RetrieveEvents().then(events => { return [...events, ...calculateCycle()] })
   }
 
+  // outline
+  // (redirects to /signin if there is no user)
+  // main div
+  // |- render the sidebar if it is toggled
+  // |- main body of the page
+  // |  |- render the calendar once events are loaded from the API
   return (
     <> { user ?
       <div className='home'>
+
         <Header showSidebar={showSidebar} setShowSidebar={setShowSidebar} calRef={calRef}/>
         <div className='home-body'>
           {showSidebar && renderSidebar()}
