@@ -10,6 +10,10 @@ import Header from './Header'
 import { useUserValue } from '../contexts/userContext'
 import { EventInput } from '@fullcalendar/react'
 import { db } from '../services/firebase/firebaseConfig';
+import Button from '@material-ui/core/Button'
+import AddIcon from '@material-ui/icons/Add';
+import { actionTypes as actions } from '../reducer';
+
 import AddEvent, { AddEventDialog } from './AddEvent';
 
 export default function Home() {
@@ -17,6 +21,7 @@ export default function Home() {
   let user: any;
   let userSettings: any; 
   let userState = useUserValue().state;
+  let dispatch = useUserValue().dispatch;
   if (userState) {
     user = userState.user;
     userSettings = userState.userSettings;
@@ -51,8 +56,24 @@ export default function Home() {
         setCurrentEvents([...events, ...calculateCycle()]);
         setEventsLoaded(true);
       });
+
+      if (userSettings && userSettings._classes) {
+        dispatch({ type: actions.SET_USER_SETTINGS, userSettings: {
+          classes: [
+            userSettings._classes.A,
+            userSettings._classes.B,
+            userSettings._classes.C,
+            userSettings._classes.D,
+            userSettings._classes.E,
+            userSettings._classes.F,
+            userSettings._classes.G,
+            userSettings._classes.H,
+            userSettings._classes.I,
+          ]
+        }});
+      }
     }
-  }, [user]);
+  }, [user, userSettings]);
 
   // helper function to take seconds and create a date object
   function toDateTime(secs: number) {

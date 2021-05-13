@@ -4,21 +4,18 @@ import { useUserValue } from '../contexts/userContext'
 import Header from './Header';
 import { actionTypes as actions } from '../reducer'
 import { useHistory } from 'react-router-dom';
-import SettingsIcon from '@material-ui/icons/Settings';
-import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
-import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace';
 import Button from '@material-ui/core/Button';
+import { db } from '../services/firebase/firebaseConfig';
+import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace';
 
 export default function UserSettings() {
   let history = useHistory();
   let { state, dispatch } = useUserValue();
   let { user, userSettings } = state;
   const blocks = ["A", "B", "C", "D", "E", "F", "G", "H", "I"];
-  let [classList, setClassList] = useState(userSettings && userSettings.classes ? [...userSettings.classes].map(i => {
-    return i ? i : ""
+  let [classList, setClassList] = useState(userSettings && userSettings.classes ? [...userSettings.classes].map(c => {
+    return c ? c : ""
   }): []);
-
-  let [currentView, setCurrentView] = useState(1);
 
   // helper function to update global state when the form is submitted
   function updateClasses(event: any) {
@@ -32,7 +29,19 @@ export default function UserSettings() {
         classes: classList
       }})
     }
+    db.collection('test_collection').doc(user.uid).collection('settings').doc('classes').set({
+      A: classList[0],
+      B: classList[1],
+      C: classList[2],
+      D: classList[3],
+      E: classList[4],
+      F: classList[5],
+      G: classList[6],
+      H: classList[7],
+      I: classList[8],
+    })
     event.preventDefault();
+    history.push('/home');
   }
 
   // helper function for updating input values
@@ -40,14 +49,6 @@ export default function UserSettings() {
     let newClassList = [...classList];
     newClassList[index] = value;
     setClassList(newClassList);
-  }
-
-  function generalSettings() {
-    return (
-      <>
-        <h1>General</h1>
-      </>
-    )
   }
 
   function scheduleSettings() {
@@ -78,34 +79,14 @@ export default function UserSettings() {
     <> { user ?  <>
     <Header />
     <div className="user-settings">
-      <div className="user-settings-sidebar">
-        <div style={{borderBottom: 'solid 2px #dddddd'}}>
+      <div className="user-settings-body">
         <Button
           startIcon={<KeyboardBackspaceIcon />}
           onClick={() => history.push("/home")}
           size="small"
           style={{borderRadius: '50px', padding: '5px 15px', margin: '5px'}}
         > back to home </Button>
-        </div>
-
-        <Button
-          startIcon={<SettingsIcon />}
-          onClick={() => setCurrentView(1)}
-          size="large"
-          style={{borderRadius: '50px', padding: '5px 15px', margin: '5px'}}
-        >General</Button>
-
-        <Button
-          startIcon={<CalendarTodayIcon />}
-          onClick={() => setCurrentView(2)}
-          size="large"
-          style={{borderRadius: '50px', padding: '5px 15px', margin: '5px'}}
-        >Schedule</Button>
-      </div>
-
-      <div className="user-settings-body">
-        { currentView === 1 && generalSettings() }
-        { currentView === 2 && scheduleSettings() }
+        { scheduleSettings() }
       </div>
     </div> </> : history.push("/signin") }
     </>

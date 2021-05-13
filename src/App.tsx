@@ -25,9 +25,12 @@ const theme = createMuiTheme({
 function App() {
   // global state
   let user: any;
+  let userSettings: { class: string[] };
   let userState = useUserValue().state;
   if (userState) {
     user = userState.user;
+    userSettings = userState.settings || null
+    console.log(userSettings);
   }
 
   // routes are fairly self-explanitory

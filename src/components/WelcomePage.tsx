@@ -6,11 +6,12 @@ import { useHistory } from 'react-router-dom';
 import { useUserValue } from '../contexts/userContext';
 import { actionTypes as actions } from '../reducer'
 import Header from './Header';
+import { db } from '../services/firebase/firebaseConfig';
 
 const blocks = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
 
 export default function WelcomePage() {
-  let [classList, setClassList] = useState(new Array(blocks.length));
+  let [classList, setClassList] = useState(new Array(blocks.length).fill(""));
   let history = useHistory();
 
   // global state: the user as well as userSettings
@@ -22,8 +23,7 @@ export default function WelcomePage() {
     userSettings = state.userSettings;
   }
 
-  // update classes before going to home
-  function goToHome() {
+  function continueBtn(e: any) {
     // if there are userSettings saved maintain them and only update the
     // classes array
     if (userSettings) {
@@ -36,7 +36,19 @@ export default function WelcomePage() {
         classes: classList
       }});
     }
+    db.collection('test_collection').doc(user.uid).collection('settings').doc('classes').set({
+      A: classList[0],
+      B: classList[1],
+      C: classList[2],
+      D: classList[3],
+      E: classList[4],
+      F: classList[5],
+      G: classList[6],
+      H: classList[7],
+      I: classList[8],
+    })
     history.push("/home");
+    e.preventDefault();
   }
 
   // update local state whenever the user updates one of the inputs
@@ -59,6 +71,11 @@ export default function WelcomePage() {
   return (
     <div>
       {!user && history.push("/signin") /* go to signin if there is no logged in user */ }
+      {
+        userSettings
+        && userSettings._classes
+        && history.push("/home")
+      }
       <Header />
       <h1 style = {{fontSize: 60, textAlign: 'center'}}>Welcome!</h1>
       <div>
@@ -71,12 +88,16 @@ export default function WelcomePage() {
             return (
               <div style={{textAlign: 'center', margin: '5px'}} key={index}>
                 <span style = {{fontSize: 25, alignSelf: 'center'}}>{block}<a style={{marginRight: '5.0rem'}}></a></span>{" "}
-                <input style={{fontSize: 25, padding: '10px', borderWidth: 0, borderBottomWidth: 2}} type="text" placeholder="class name" onChange={item => classInputted(item.target.value, index)}/>
+                <input style={{fontSize: 25, padding: '10px', borderWidth: 0, borderBottomWidth: 2}}
+                  type="text" placeholder="class name"
+                  onChange={item => classInputted(item.target.value, index)}
+                  value={classList[index]}
+                />
               </div>
             )
           })}
         </ul>
-        <Button color="primary" variant="contained" style={{marginLeft: '42%', height: 50, width: 250, textAlign:'center', float: 'initial'}} onClick={() => goToHome()}>
+        <Button color="primary" variant="contained" style={{marginLeft: '42%', height: 50, width: 250, textAlign:'center', float: 'initial'}} onClick={continueBtn}>
             Continue
         </Button>
       </div>
