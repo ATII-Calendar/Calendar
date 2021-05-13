@@ -47,7 +47,6 @@ export default function Home() {
     if (user) {
       RetrieveEvents().then(events => {
         // @ts-ignore
-        setEvents([...events, ...calculateCycle()]);
         // @ts-ignore
         setCurrentEvents([...events, ...calculateCycle()]);
         setEventsLoaded(true);
