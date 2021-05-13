@@ -10,6 +10,7 @@ import { BrowserRouter } from 'react-router-dom';
 import UserSettings from './components/UserSettings';
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
+import AdminSettings from './components/AdminSettings';
 
 // this is how we can customize the theme
 // changes to things like colors will automatically apply to components using
@@ -25,14 +26,18 @@ const theme = createMuiTheme({
 function App() {
   // global state
   let user: any;
+  let userIsAdmin: any;
   let userState = useUserValue().state;
   if (userState) {
     user = userState.user;
+    userIsAdmin = userState.userIsAdmin;
   }
 
   // routes are fairly self-explanitory
   // `path` is the relative path following the URL, and `render` is a function
   // that returns JSX, which in our case will be the component/page
+  // 
+  // the /admin route is only avaible to users who are admins
   return (
     <ThemeProvider theme={theme}>
     <BrowserRouter>
@@ -47,6 +52,7 @@ function App() {
       <Route exact path="/home" render={() => <Home/>}/>
       <Route exact path="/signin" render={() => <SignIn/>}/>
       <Route exact path="/settings" render={() => <UserSettings/>}/>
+      <Route exact path="/admin" render={() => <AdminSettings/>}/>
     </BrowserRouter>
     </ThemeProvider>
   );

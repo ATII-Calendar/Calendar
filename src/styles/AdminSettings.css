@@ -1,0 +1,13 @@
+.adminsettings {
+  display: flex;
+  flex-direction: row;
+}
+
+.adminsettings-sidebar {
+  border-right: solid 2px;
+  border-color: #dddddd;
+  padding: 5px 10px;
+  display: flex;
+  flex-direction: column;
+  flex: 0.2;
+}

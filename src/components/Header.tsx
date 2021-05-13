@@ -37,6 +37,7 @@ export default function Header({ showSidebar, setShowSidebar, calRef }: any): JS
 
   let user: firebase.User | null = null;
   let userState = useUserValue().state;
+  let userIsAdmin = userState.userIsAdmin;
   if (userState.user) {
     user = userState.user;
   }
@@ -116,7 +117,7 @@ export default function Header({ showSidebar, setShowSidebar, calRef }: any): JS
 
         { user && <>
 
-          <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick} style={{marginRight: 0, marginLeft: "auto", color: "white"}}>
+        <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick} style={{marginRight: 0, marginLeft: "auto", color: "white"}}>
           {user.displayName}
         </Button>
         <Menu
@@ -130,6 +131,10 @@ export default function Header({ showSidebar, setShowSidebar, calRef }: any): JS
             history.push("/settings");
             handleClose();
           }}>Settings</MenuItem>
+          { userIsAdmin && <MenuItem onClick={() => {
+            history.push("/admin");
+            handleClose();
+          }}>Admin Settings</MenuItem> }
           <MenuItem onClick={handleClose}>Help</MenuItem>
           <MenuItem onClick={() => {
             signOut();

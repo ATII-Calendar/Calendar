@@ -17,6 +17,16 @@ export default function SignIn() {
   const dispatch = useUserValue().dispatch;
 
   function signIn() {
+    let admins: string[] = []
+    db.collection('admins').get()
+      .then((querySnapshot: any) => {
+        // console.log(querySnapshot);
+        querySnapshot.forEach((doc: any) => {
+          let data = doc.data();
+          admins.push(data.id);
+        });
+      });
+
     // TODO: get persistance to work
     // the key is being saved to local storage, but the user is still being required to sign in again.
     auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(async () => {
@@ -30,12 +40,17 @@ export default function SignIn() {
         dispatch({ type: actions.SET_USER, user: user})
 
         if (user) {
-         (async function() {
+          if (admins.includes(user.uid)) {
+            dispatch({
+              type: actions.SET_USER_IS_ADMIN,
+              userIsAdmin: true
+            });
+          }
+          (async function() {
             await db.collection('test_collection').doc(user.uid).collection('settings').get()
             .then((querySnapshot: any) => {
               querySnapshot.forEach((doc: any) => {
                 let { data } = doc;
-                console.log(data)
                 dispatch({type: actions.SET_USER_SETTINGS, userSettings: data})
               });
             });
