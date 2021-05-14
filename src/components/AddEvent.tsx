@@ -21,6 +21,7 @@ export function AddEventDialog({ onClose, selectedValue, open, start, end, globa
 
   // global state: the current user
   let user: any;
+  let globalEvents: any;
   let userState = useUserValue().state;
   if (userState) {
     user = userState.user;

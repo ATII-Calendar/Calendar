@@ -31,3 +31,13 @@
 .datetimepicker > input {
   border: 1px solid black;
 }
+
+.globaleventitem {
+  padding: 5px;
+  border-radius: 50px;
+}
+
+.globaleventitem:hover {
+  cursor: pointer;
+  background-color: #dddddd;
+}

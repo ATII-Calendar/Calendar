@@ -10,8 +10,6 @@ import Header from './Header'
 import { useUserValue } from '../contexts/userContext'
 import { EventInput } from '@fullcalendar/react'
 import { db } from '../services/firebase/firebaseConfig';
-import Button from '@material-ui/core/Button'
-import AddIcon from '@material-ui/icons/Add';
 import { actionTypes as actions } from '../reducer';
 
 import AddEvent, { AddEventDialog } from './AddEvent';
@@ -146,6 +144,7 @@ export default function Home() {
   async function RetrieveEvents() {
 
     let events:EventInput[] = []
+    let _globalEvents: EventInput[] = []
 
     // load the user's events if they are logged in
     // this check isn't strictly necessary because the component should
@@ -165,21 +164,28 @@ export default function Home() {
         })
       )})
 
+      // fetching global events
       await db.collection('global_calendar').get()
         .then((querySnapshot) => {querySnapshot.forEach((doc => {
           let data = doc.data();
-          events.push({
+          _globalEvents.push({
             id:doc.id, title:String(data.title),
             start: toDateTime(data.start.seconds),
             end: toDateTime(data.end.seconds),
             allDay: data.allDay,
-            display: 'background'
+            display: data.display,
           })
         })
       )})
+
+      // adding the global events to the global state
+      dispatch({
+        type: actions.SET_GLOBAL_EVENTS,
+        globalEvents: _globalEvents
+      })
     }
 
-    return events;
+    return [...events, ..._globalEvents];
   }
 
   // styling for event content (bold/italics)
@@ -212,10 +218,8 @@ export default function Home() {
     return (
       <>
         <div className='home-sidebar'>
-          <AddEventDialog start={startStr} end={endStr} open={dialogOpen}
-            onClose={() => {setDialogOpen(false)}}/>
           <div className='home-sidebar-section' style={{marginBottom: "10px"}}>
-            <AddEvent />
+            <AddEvent global={false}/>
           </div>
           <div className='home-sidebar-section'>
             <h4>Upcoming Events</h4>
@@ -275,6 +279,8 @@ export default function Home() {
         <div className='home-body'>
           {showSidebar && renderSidebar()}
           <div className='home-main'>
+            <AddEventDialog global={false} start={startStr} end={endStr} open={dialogOpen}
+              onClose={() => {setDialogOpen(false)}}/>
             { eventsLoaded && <FullCalendar
               plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, iCalendarPlugin]}
               height="100%"

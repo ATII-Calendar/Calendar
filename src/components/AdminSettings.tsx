@@ -10,12 +10,15 @@ import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
 import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace';
 
 import { useUserValue } from '../contexts/userContext'
+import { actionTypes as actions } from '../reducer';
 
 import red from '@material-ui/core/colors/red';
+import { db } from '../services/firebase/firebaseConfig';
 
 export default function AdminSettings() { 
   const history = useHistory();
-  let { user, userIsAdmin } = useUserValue().state;
+  let { user, userIsAdmin, globalEvents } = useUserValue().state;
+  let dispatch = useUserValue().dispatch;
   let [ currentView, setCurrentView ] = useState(0);
   const danger_red = red[500]; // #f44336
   const blocks = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
@@ -23,7 +26,7 @@ export default function AdminSettings() {
   function updateSchedule() {
     return (
       <div>
-        <Typography variant="h3">Update Cycle</Typography>
+        <Typography variant="h4">Update Cycle</Typography>
         <p>Be careful! Changes you make here will effect all the users of this application.</p>
         <p>Here you can change what time each block meets on each day of the cycle. Leave the input blank if a block doesn't meet on a specific day.</p>
 
@@ -37,12 +40,42 @@ export default function AdminSettings() {
     );
   }
 
-  function globalEvents() {
+  function deleteGlobalEvent(clickevent: any, event: any) {
+    db.collection('global_calendar').doc(event.id).delete()
+    dispatch({
+      type: actions.SET_GLOBAL_EVENTS,
+      globalEvents: globalEvents.filter((e: any) => e.id !== event.id)
+    })
+    clickevent.preventDefault();
+  }
+
+  function globalEventsView() {
     return (
       <div>
-        <Typography variant="h3">Global Events</Typography>
+        <Typography variant="h4">Global Events</Typography>
         <p>Be careful! Changes you make here will effect all the users of this application.</p>
         <p>Here you can create events that will show up as background events for all users of this application.</p>
+
+        <div style={{borderTop: '1px solid darkgray', paddingTop: '10px'}}>
+          { globalEvents.length > 0 ?
+            <div>
+              <div style={{marginBottom: '10px'}}>
+                <Typography variant="h5">Current Global Events</Typography>
+                <small>Click on an event to delete it.</small>
+              </div>
+              <ul>
+              { globalEvents.map((e: any) => {
+                return (
+                  <li className="globaleventitem" key={e.id} // the key attribute can be anything that will be unique – the event id is easy in this case
+                    onClick={(clickevent: any) => deleteGlobalEvent(clickevent, e)}>
+                    {String(e.title)}
+                  </li>
+                )
+              }) }
+              </ul>
+            </div> : 
+            <p>There are currently no global events.</p> }
+        </div>
 
         <div className="globalevents">
           <AddEvent global={true}/>
@@ -91,7 +124,7 @@ export default function AdminSettings() {
 
        <div className="adminsettings-body">
          { currentView == 0 && updateSchedule() }
-         { currentView == 1 && globalEvents() }
+         { currentView == 1 && globalEventsView() }
        </div>
      </div>
    </div> : <Redirect to="/" /> }
