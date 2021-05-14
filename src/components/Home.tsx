@@ -156,12 +156,24 @@ export default function Home() {
       await db.collection('test_collection').doc(user.uid).collection('events').get()
         .then((querySnapshot) => {querySnapshot.forEach((doc => {
           let data = doc.data();
-          console.log(data);
           events.push({
             id:doc.id, title:String(data.title),
             start: toDateTime(data.start.seconds),
             end: toDateTime(data.end.seconds),
             allDay: data.allDay
+          })
+        })
+      )})
+
+      await db.collection('global_calendar').get()
+        .then((querySnapshot) => {querySnapshot.forEach((doc => {
+          let data = doc.data();
+          events.push({
+            id:doc.id, title:String(data.title),
+            start: toDateTime(data.start.seconds),
+            end: toDateTime(data.end.seconds),
+            allDay: data.allDay,
+            display: 'background'
           })
         })
       )})

@@ -3,7 +3,7 @@ import '../styles/AdminSettings.css';
 import { Button, Typography } from '@material-ui/core';
 import { Redirect, useHistory } from 'react-router-dom';
 import Header from './Header';
-import DynamicTable from './DynamicTable';
+import AddEvent from './AddEvent';
 
 import SettingsIcon from '@material-ui/icons/Settings';
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
@@ -16,25 +16,37 @@ import red from '@material-ui/core/colors/red';
 export default function AdminSettings() { 
   const history = useHistory();
   let { user, userIsAdmin } = useUserValue().state;
+  let [ currentView, setCurrentView ] = useState(0);
   const danger_red = red[500]; // #f44336
   const blocks = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
 
-  function adminSettings() {
+  function updateSchedule() {
     return (
       <div>
-        <Typography variant="h3">Admin</Typography>
+        <Typography variant="h3">Update Cycle</Typography>
         <p>Be careful! Changes you make here will effect all the users of this application.</p>
-
-        <Typography variant="h5">Update Block Schedule</Typography>
         <p>Here you can change what time each block meets on each day of the cycle. Leave the input blank if a block doesn't meet on a specific day.</p>
 
         <div className="update-schedule">
-          <DynamicTable />
         </div>
 
         <Button color="inherit" variant="contained"
           style={{backgroundColor: danger_red, color: 'white'}}
         >Publish Changes</Button>
+      </div>
+    );
+  }
+
+  function globalEvents() {
+    return (
+      <div>
+        <Typography variant="h3">Global Events</Typography>
+        <p>Be careful! Changes you make here will effect all the users of this application.</p>
+        <p>Here you can create events that will show up as background events for all users of this application.</p>
+
+        <div className="globalevents">
+          <AddEvent global={true}/>
+        </div>
       </div>
     );
   }
@@ -60,36 +72,28 @@ export default function AdminSettings() {
             onClick={() => history.push("/settings")}
             size="large"
             style={{borderRadius: '50px', padding: '5px 15px', margin: '5px'}}
-          >Schedule</Button>
+          >My Schedule</Button>
 
           <Button
             startIcon={<SettingsIcon />}
-            onClick={() => null}
+            onClick={() => setCurrentView(0)}
             size="large"
             style={{borderRadius: '50px', padding: '5px 15px', margin: '5px'}}
-          >Admin</Button>
+          >Cycle Schedule</Button>
+
+          <Button
+            startIcon={<SettingsIcon />}
+            onClick={() => setCurrentView(1)}
+            size="large"
+            style={{borderRadius: '50px', padding: '5px 15px', margin: '5px'}}
+          >Global Events</Button>
        </div>
 
        <div className="adminsettings-body">
-         { adminSettings() }
+         { currentView == 0 && updateSchedule() }
+         { currentView == 1 && globalEvents() }
        </div>
      </div>
    </div> : <Redirect to="/" /> }
-
-
-
-
-     { /* <span> <h1> Hello admin! </h1> </span>
-     <input style={{fontSize: 25, padding: '10px'}} type="date" placeholder="Start Date" onChange={handleChange2}/>
-     <Button color="primary" variant="contained" style={{marginLeft: '0', height: 50, width: 250, textAlign:'center', float: 'initial'}} onChange={handleAdd2}> 
-      Set day 1
-      </Button>
-      <div>
-      </div>
-      <input style={{fontSize: 25, padding: '10px'}} type="date" placeholder="Off day" onChange={handleChange}/>
-      <Button color="primary" variant="contained" style={{marginLeft: '0%', height: 50, width: 250, textAlign:'center', float: 'initial'}} onChange={handleAdd}> 
-      Add days off
-      </Button> */ }
-
   </>);
 }
