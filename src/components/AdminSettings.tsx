@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import '../styles/AdminSettings.css';
-import { getSectionClassNames } from '@fullcalendar/react';
-import { Button } from '@material-ui/core';
+import { Button, Typography } from '@material-ui/core';
 import { Redirect, useHistory } from 'react-router-dom';
 import Header from './Header';
+import DynamicTable from './DynamicTable';
 
 import SettingsIcon from '@material-ui/icons/Settings';
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
@@ -11,41 +11,32 @@ import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace';
 
 import { useUserValue } from '../contexts/userContext'
 
+import red from '@material-ui/core/colors/red';
+
 export default function AdminSettings() { 
-  
-  let day1 = new Date(2022, 9, 5)
-  let history = useHistory();
-  let offDays  = [new Date(2022, 7, 4)];
-  let [initialDate, setInitialDate] = React.useState(new Date());
-  let [list, setList] = React.useState(offDays);
-  let [date, setDate] = React.useState(new Date());
-  let [currentView, setCurrentView] = useState(0);
-
+  const history = useHistory();
   let { user, userIsAdmin } = useUserValue().state;
+  const danger_red = red[500]; // #f44336
+  const blocks = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
 
-  // handleChange and handleAdd for adding daysOff
-  function handleChange(event) 
-  {
-    setDate(event.target.value);
-  }
+  function adminSettings() {
+    return (
+      <div>
+        <Typography variant="h3">Admin</Typography>
+        <p>Be careful! Changes you make here will effect all the users of this application.</p>
 
-  function handleAdd()
-  {
-    let newList = list.concat(date);
+        <Typography variant="h5">Update Block Schedule</Typography>
+        <p>Here you can change what time each block meets on each day of the cycle. Leave the input blank if a block doesn't meet on a specific day.</p>
 
-    setList(newList);
-  }
+        <div className="update-schedule">
+          <DynamicTable />
+        </div>
 
-  // handleChange and handleAdd for updating the first day
-  function handleChange2(event) 
-  {
-    setInitialDate(event.target.value);
-    event.preventDefault();
-  }
-
-  function handleAdd2()
-  {
-    day1 = initialDate;
+        <Button color="inherit" variant="contained"
+          style={{backgroundColor: danger_red, color: 'white'}}
+        >Publish Changes</Button>
+      </div>
+    );
   }
 
   return (
@@ -66,17 +57,21 @@ export default function AdminSettings() {
 
           <Button
             startIcon={<CalendarTodayIcon />}
-            onClick={() => setCurrentView(2)}
+            onClick={() => history.push("/settings")}
             size="large"
             style={{borderRadius: '50px', padding: '5px 15px', margin: '5px'}}
           >Schedule</Button>
 
           <Button
             startIcon={<SettingsIcon />}
-            onClick={() => setCurrentView(1)}
+            onClick={() => null}
             size="large"
             style={{borderRadius: '50px', padding: '5px 15px', margin: '5px'}}
           >Admin</Button>
+       </div>
+
+       <div className="adminsettings-body">
+         { adminSettings() }
        </div>
      </div>
    </div> : <Redirect to="/" /> }

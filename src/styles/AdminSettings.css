@@ -11,3 +11,23 @@
   flex-direction: column;
   flex: 0.2;
 }
+
+.adminsettings-body {
+  flex: 0.8;
+  padding: 10px;
+}
+
+.update-schedule {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.datetimepicker {
+  display: flex;
+  flex-direction: row;
+}
+
+.datetimepicker > input {
+  border: 1px solid black;
+}
