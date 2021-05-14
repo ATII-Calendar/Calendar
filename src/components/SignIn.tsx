@@ -15,6 +15,7 @@ import BackgroundImage from '../assets/signin-background.jpg';
 export default function SignIn() {
   const history = useHistory()
   const dispatch = useUserValue().dispatch;
+  const { userSettings } = useUserValue().state;
 
   function signIn() {
     let admins: string[] = []
@@ -50,14 +51,17 @@ export default function SignIn() {
             await db.collection('test_collection').doc(user.uid).collection('settings').get()
             .then((querySnapshot: any) => {
               querySnapshot.forEach((doc: any) => {
-                let { data } = doc;
-                dispatch({type: actions.SET_USER_SETTINGS, userSettings: data})
+                const data = doc.data();
+                dispatch({type: actions.SET_USER_SETTINGS, userSettings: {
+                  _classes: data,
+                  classes: []
+                }})
               });
             });
           })();
         }
 
-        history.push("/")
+        history.push("/");
       }
     }).catch((err: any) => console.error(err));
   }
