@@ -8,7 +8,10 @@ import reducer from './reducer';
 import firebase from 'firebase'
 
 //Load the user, then see if the user has been saved by firebase
+let x = true
 firebase.auth().onAuthStateChanged(function(user){
+  if(x){
+    x = false
   let initialState : {
     user: any
     userSettings:any
@@ -40,6 +43,7 @@ firebase.auth().onAuthStateChanged(function(user){
     </React.StrictMode>,
     document.getElementById('root')
   );
+}
 }
 )
 

@@ -4,7 +4,6 @@ import FullCalendar, { EventApi, DateSelectArg, EventClickArg, EventContentArg, 
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
-import iCalendarPlugin from '@fullcalendar/icalendar'
 import { createEventId } from './event-utils'
 import { Redirect } from 'react-router-dom'
 import Header from './Header'
@@ -14,8 +13,10 @@ import { EventInput } from '@fullcalendar/react'
 import { db } from '../services/firebase/firebaseConfig';
 import Button from '@material-ui/core/Button'
 import AddIcon from '@material-ui/icons/Add';
+import {results} from '../services/fetch'
 
 export default function Home() {
+  let ran = false
   let user: any;
   let userSettings: any;
   let userState = useUserValue().state;
@@ -34,90 +35,25 @@ export default function Home() {
   let [eventsLoaded, setEventsLoaded] = useState(false);
 
   // checks for already created events when a user logs in
+
   useEffect(() => {
     if (user) {
       RetrieveEvents().then(events => {
         // @ts-ignore
-        setEvents([...events, ...calculateCycle()]);
+        setEvents([...events]);
         // @ts-ignore
-        setCurrentEvents([...events, ...calculateCycle()]);
+        setCurrentEvents([...events]);
         setEventsLoaded(true);
       });
     }
   }, [user]);
+
 
   // helper function to take seconds and create a date object
   function toDateTime(secs: number) {
       var t = new Date(1970, 0, 1); // Epoch
       t.setSeconds(secs);
       return t;
-  }
-
-  // Generating a dummy cycle – ultimately this will be scraped from the RCDS
-  // site or another ical source
-  function calculateCycle() {
-    let cycleDay = 1;
-    let date = new Date();
-    let events: any[] = [];
-
-    const blocks = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
-
-    let cycle = [
-      [0, 1, 2, 3, 8],
-      [4, 5, 6, 7, 8],
-      [2, 0, 1, 3, 8],
-      [6, 4, 5, 7, 8],
-      [1, 2, 0, 3, 8],
-      [5, 6, 4, 7, 8],
-    ]
-
-    let startTimes = [
-      [9, 15], [11, 5], [12, 55], [14, 25], [15, 30]
-    ]
-
-    let endTimes = [
-      [10, 20], [12, 10], [14, 0], [3, 30], [4, 20]
-    ]
-    console.log(userSettings)
-    for (let i = 0; i < 14; i++) {
-        if (date.getDay() !== 0 && date.getDay() !== 6) {
-          for (let j = 0; j < 5; j++) {
-            let startTime = new Date(date);
-            startTime.setHours(startTimes[j][0]);
-            startTime.setMinutes(startTimes[j][1]);
-
-            let endTime = new Date(date);
-            endTime.setHours(endTimes[j][0]);
-            endTime.setMinutes(endTimes[j][1]);
-
-            events.push({
-              // the most beautiful expression you've ever seen:
-              //@ts-ignore
-              title: userSettings.classes[cycle[cycleDay-1][j]] ?
-                  userSettings.classes[cycle[cycleDay-1][j]] :
-                  blocks[cycle[cycleDay-1][j]] + ' block',
-              //@ts-ignore
-              start: startTime,
-              //@ts-ignore
-              end: endTime,
-              //@ts-ignore
-              display: 'background',
-            });
-          }
-
-          events.push({
-            //@ts-ignore
-            allDay: true,
-            //@ts-ignore
-            title: `Day ${cycleDay}`,
-            //@ts-ignore
-            start: date,
-          });
-          cycleDay = ((cycleDay++) % 6) + 1;
-        }
-
-        let newDate = new Date(date); newDate.setDate(date.getDate() + 1); date = newDate; }
-    return events;
   }
 
   // function that checks for the user's preexisting events
@@ -135,11 +71,12 @@ export default function Home() {
               id:doc.id, title:String(data.title),
               start: toDateTime(data.start.seconds),
               end: toDateTime(data.end.seconds),
-              allDay: data.allDay
+              allDay: data.allDay,
+              classNames:["personal"],
           }
+          x++
         })
       )})
-
       globalEvents = events
     }
 
@@ -148,7 +85,6 @@ export default function Home() {
     events = globalEvents
 
   }
-    console.log(events)
 
     return events;
   }
@@ -167,11 +103,12 @@ export default function Home() {
     // no need to render background events, which are typically just the blocks
     // also no need to render "day" events, which will just make the event list
     // very long for no good reason
-    if (event.display !== 'background' && event.title.substring(0, 3) !== "Day") {
+    // @ts-ignore
+    if (event.display !== 'background' && event.title.substring(0, 3) !== "Day" && event.classNames[0] == "personal" && event.start > new Date()) {
       return (
         <li key={event.id}>
-          <b>{formatDate(event.start!, {year: 'numeric', month: 'short', day: 'numeric'}) + " "}</b>
-          <i>{event.title}</i>
+          <b>{formatDate(event.start!, {month: 'short', day: 'numeric'}) + " "}</b>
+          <p>{event.title}</p>
         </li>
       )
     }
@@ -194,19 +131,70 @@ export default function Home() {
             </Button>
           </div>
           <div className='home-sidebar-section'>
-            <h4>My Events</h4>
+            <h4>Upcoming Events</h4>
             <ul>
               {currentEvents.map(renderSidebarEvent)}
             </ul>
-          </div>
-          <div className='home-sidebar-section'>
-            <h4>My Calendars</h4>
-          </div>
+        </div>
+        <div>
+        <form onSubmit={updateCal}>
+        {/* Commenting out currently empty feeds*/}
+          <label htmlFor="personal"> My Events</label>
+          <input type="checkbox" id="personal" name="personal" value="personal"/> <br/>
+      {/* <label htmlFor="events1"> Admissions </label>
+          <input type="checkbox" id="event2" name="event2" value="RCDS"/> <br/>
+          <label htmlFor="events2"> Alumni & Advancement </label>
+          <input type="checkbox" id="event" name="event2" value="RCDS"/> <br/> */}
+          <label htmlFor="events3"> College Counseling Events </label>
+          <input type="checkbox" id="event3" name="event1" value="RCDS"/> <br/>
+          <label htmlFor="events4"> Community </label>
+          <input type="checkbox" id="event4" name="event1" value="RCDS"/> <br/>
+          <label htmlFor="events5"> Days </label>
+          <input type="checkbox" id="event5" name="event5" value="RCDS"/> <br/>
+      {/*    <label htmlFor="events6"> General Skating </label>
+          <input type="checkbox" id="event6" name="event6" value="RCDS"/> <br/> */}
+          <label htmlFor="events7"> Grade 6-12 Rotation </label>
+          <input type="checkbox" id="event7" name="event7" value="RCDS"/> <br/>
+        {/*  <label htmlFor="events8"> School Closings </label>
+          <input type="checkbox" id="event8" name="event8" value="RCDS"/> <br/> */}
+          <Button type="submit" color="primary" variant="contained">Update Calendar</Button>
+        </form>
+        </div>
         </div>
       </>
     )
   }
+async function updateCal(event: any){
+  event.preventDefault();
+  let checks = {
+    "personal":event.target.personal.checked,
+  //  "admissions":event.target.event1.checked,
+  //  "alumni":event.target.event2.checked,
+    "college":event.target.event3.checked,
+    "community":event.target.event4.checked,
+    "days":event.target.event5.checked,
+  //  "skating":event.target.event6.checked,
+    "rotation":event.target.event7.checked,
+  //  "closings":event.target.event7.checked,
+  }
+    //@ts-ignore
+    let events = calRef.current.getApi().getEvents();
+    for (let i = 0; i < events.length; i++){
+      if (!checks[events[i].classNames[0]])
+        events[i].remove()
+      }
 
+    let rcdsEvents:any = await results
+    //@ts-ignore
+    let api = calRef.current.getApi();
+
+    for (let i = 0; i < rcdsEvents.length; i++){
+      if(checks[rcdsEvents[i].classNames[0]] && !api.getEventById(rcdsEvents[i].id)){
+      api.addEvent(rcdsEvents[i])
+      }
+    }
+
+}
   // adds an event onto the calendar, allows for title of event and duration
 
   let handleDateSelect = (selectInfo: DateSelectArg) => {
@@ -229,7 +217,6 @@ export default function Home() {
     }
   }
 
-  // TODO proper deletions (remove events from the API)
   let handleEventClick = (clickInfo: EventClickArg) => {
     if (window.confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
       db.collection('test_collection').doc(user.uid).collection('events').doc(clickInfo.event.id).delete()
@@ -244,8 +231,25 @@ export default function Home() {
     setCurrentEvents(events)
   }
 
-  async function getEvents() {
-    return RetrieveEvents().then(events => { return [...events, ...calculateCycle()] })
+
+
+async function getEvents() {
+  if(!ran){
+  results.then(results=>{
+    console.log("it happen")
+  //@ts-ignore
+  let api = calRef.current.getApi();
+
+  for (let i = 0; i < results.length; i++){
+    if(results[i].classNames[0] == "days"){
+      console.log("it keep happen")
+    api.addEvent(results[i])
+    }
+  }
+  })
+  ran = true
+}
+  return RetrieveEvents().then(events => {return [...events] })
   }
 
   return (
@@ -256,7 +260,7 @@ export default function Home() {
           {showSidebar && renderSidebar()}
           <div className='home-main'>
             { eventsLoaded && <FullCalendar
-              plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, iCalendarPlugin]}
+              plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
               height="100%"
               headerToolbar={false}
               ref={calRef}
