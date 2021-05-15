@@ -1,0 +1,32 @@
+let results: any = []
+let links = [
+  "https://www.ryecountryday.org/calendar/calendar_1378.ics", //admissions
+  "https://www.ryecountryday.org/calendar/calendar_180.ics", //alumni and advancement
+  "https://www.ryecountryday.org/calendar/calendar_1338.ics", //college counseling
+  "https://www.ryecountryday.org/calendar/calendar_1405.ics", //community
+  "https://www.ryecountryday.org/calendar/calendar_1426.ics", //days
+  "https://www.ryecountryday.org/calendar/calendar_1380.ics", //general skating
+  "https://www.ryecountryday.org/calendar/calendar_1431.ics", //grade 6-12 rotation
+  "https://www.ryecountryday.org/calendar/calendar_1425.ics", //school closings
+]
+let classes = [
+  "admissions",
+  "alumni",
+  "college",
+  "community",
+  "days",
+  "skating",
+  "rotation",
+  "closings"
+]
+let data: any = []
+for (let i = 0; i < 8; i++){
+  results[i] = await fetch(links[i]).then(results=
+  let raw = await results[i].text();
+  data[i] = raw.split(/\r?\n/);
+}
+for (let i = 0; i < 8; i++){
+  rcdsEvents.push(...parseDays(data[i],classes[i]))
+}
+console.log("done")
+return rcdsEvents

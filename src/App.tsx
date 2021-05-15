@@ -10,6 +10,8 @@ import { BrowserRouter } from 'react-router-dom';
 import UserSettings from './components/UserSettings';
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
+import { db } from './services/firebase/firebaseConfig';
+import { actionTypes as actions } from './reducer'
 
 // this is how we can customize the theme
 // changes to things like colors will automatically apply to components using
@@ -23,7 +25,7 @@ const theme = createMuiTheme({
 });
 
 function App() {
-  // global state
+  //Defining variables
   let user: any;
   let userSettings: { class: string[] };
   let userState = useUserValue().state;
@@ -37,6 +39,7 @@ function App() {
   // `path` is the relative path following the URL, and `render` is a function
   // that returns JSX, which in our case will be the component/page
   return (
+    //Sets the theme
     <ThemeProvider theme={theme}>
     <BrowserRouter>
       <Route exact path="/">
