@@ -42,7 +42,6 @@ export async function fetchEvents(userClasses=[]){
 //Takes the ical feed and turns it into event objects
 function parseDays(data, classes, days, userClasses){
   let events:EventInput[] = [];
-  //console.log(data)
   for (let i = 4; i < data.length; i++){
     let event = data[i].split(/:/);
     let start = ""
@@ -70,7 +69,6 @@ function parseDays(data, classes, days, userClasses){
       i+= 5
     }
   }
-  //console.log(events)
   return events;
 }
 export function calculateCycle(day,date, userClasses){

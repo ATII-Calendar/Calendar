@@ -74,7 +74,6 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    console.log('useEffect');
     if (user) {
       // if (userSettings.classes.length <= 0) {
         if (userSettings && userSettings._classes) {
@@ -101,7 +100,6 @@ export default function Home() {
             let admins: string[] = []
             await db.collection('admins').get()
               .then((querySnapshot: any) => {
-                // console.log(querySnapshot);
                 querySnapshot.forEach((doc: any) => {
                   let data = doc.data();
                   admins.push(data.id);

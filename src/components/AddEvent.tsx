@@ -60,12 +60,10 @@ export function AddEventDialog({ onClose, selectedValue, open, start, end, calRe
   // combines the strings provided by the inputs before determining if the event
   // is an all-day event and then pushes the event to the database
   const addEvent = (e: any) => {
-    console.log(e)
     let api
     if (calRef) {
       api = calRef.current.getApi();
     }
-    console.log(startDate)
     let endStr:any = 0
     let startStr:any = 0
     let allDay = false;
@@ -98,7 +96,6 @@ export function AddEventDialog({ onClose, selectedValue, open, start, end, calRe
         classNames: ["personal"],
         allDay:allDay
       }
-      console.log(temp)
       api.addEvent(temp);
     }
 

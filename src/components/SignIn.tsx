@@ -21,7 +21,6 @@ export default function SignIn() {
     let admins: string[] = []
     db.collection('admins').get()
       .then((querySnapshot: any) => {
-        // console.log(querySnapshot);
         querySnapshot.forEach((doc: any) => {
           let data = doc.data();
           admins.push(data.id);
