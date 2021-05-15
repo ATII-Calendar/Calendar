@@ -13,8 +13,8 @@ async function fetchEvents(){
     "https://www.ryecountryday.org/calendar/calendar_1405.ics", //community
     "https://www.ryecountryday.org/calendar/calendar_1426.ics", //days
   // "https://www.ryecountryday.org/calendar/calendar_1380.ics", //general skating
-  "https://www.ryecountryday.org/calendar/calendar_1431.ics", //grade 6-12 rotation
-    //"https://www.ryecountryday.org/calendar/calendar_1425.ics", //school closings
+  //"https://www.ryecountryday.org/calendar/calendar_1431.ics", //grade 6-12 rotation
+    "https://www.ryecountryday.org/calendar/calendar_1425.ics", //school closings
   ]
   let classes = [
   //  "admissions",
@@ -23,8 +23,8 @@ async function fetchEvents(){
     "community",
     "days",
     //"skating",
-    "rotation",
-    //"closings"
+    //"rotation",
+    "closings"
   ]
   let rcdsEvents:any = []
   let data: any = []

@@ -7,17 +7,12 @@ import { useUserValue } from '../contexts/userContext';
 export default function EventDetail({ event, visible, handleClose }: any) {
   let { user } = useUserValue().state;
 
-  if (event) {
-    console.log(event._start);
-  }
-
   function handleDelete(e: any) {
     event.remove();
     db.collection('test_collection').doc(user.uid).collection('events').doc(event.id).delete()
     handleClose();
     e.preventDefault();
   }
-
   return (
     <> { event ?
       <Dialog open={visible}>
@@ -28,14 +23,14 @@ export default function EventDetail({ event, visible, handleClose }: any) {
               <Typography variant="body1">Description: </Typography>
               <Typography variant="body1">{event.extendedProps.description}</Typography>
             </div>
-            <div className="row">
+            {/*<div className="row">
               <Typography variant="body1">Start: </Typography>
               <input type="date" value={event.start.toString()} readOnly/>
             </div>
             <div className="row">
               <Typography variant="body1">End: </Typography>
               <input type="date" value={event.end.toString()} readOnly/>
-            </div>
+            </div>*/}
           </div>
         </DialogContent>
         <DialogActions>

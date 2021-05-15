@@ -59,27 +59,42 @@ export function AddEventDialog({ onClose, selectedValue, open, start, end, calRe
   // combines the strings provided by the inputs before determining if the event
   // is an all-day event and then pushes the event to the database
   const addEvent = (e: any) => {
+    console.log(e)
     let api = calRef.current.getApi();
+    console.log(startDate)
+    let endStr:any = 0
+    let startStr:any = 0
+    let allDay = false;
 
-    let endStr, startStr = `${startDate}T${startTime}-0000`;
-    let _endDate, _startDate = new Date(startStr);
+    if(startTime != ""){
+      startStr = `${startDate}T${startTime}-0000`;
+    }
+    else{
+      startStr = `${startDate}`
+      endStr = `${startDate}`
+      allDay = true
+    }
+    let _endDate = new Date(startStr);
+    let _startDate = new Date(startStr)
     if (endDate && endTime) {
       endStr = `${endDate}T${endTime}-0000`;
       _endDate = new Date(endStr);
     }
-    let allDay = false;
 
     // @ts-ignore
     addUserEvent(user.uid, title, description, _startDate ? _startDate : null,
             _endDate ? _endDate : null, allDay);
 
-    api.addEvent({
+    let temp = {
       title: title,
       description: description,
-      start: new Date(`${startDate}T${startTime}-0400`),
-      end: new Date(`${endDate}T${endTime}-0400`),
+      start: new Date(allDay ? startStr : `${startDate}T${startTime}-0400`),
+      end: new Date(allDay ? startStr : `${endDate}T${endTime}-0400`),
+      classNames: ["personal"],
       allDay:allDay
-    });
+    }
+    console.log(temp)
+    api.addEvent(temp);
 
     handleClose();
     e.preventDefault();
@@ -138,7 +153,7 @@ export function AddEventDialog({ onClose, selectedValue, open, start, end, calRe
   );
 }
 
-// component with button to launch the dialog – this is what we use in the 
+// component with button to launch the dialog – this is what we use in the
 // sidebar. the whole thing can't be one component so that the dragging
 // interface doesn't add a random button to the UI
 export default function AddEvent({ calRef }: any) {
