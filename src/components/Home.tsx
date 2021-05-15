@@ -199,6 +199,8 @@ export default function Home() {
             id:doc.id, title:String(data.title),
             start: toDateTime(data.start.seconds),
             end: toDateTime(data.end.seconds),
+            classNames:["global"],
+            editable:false,
             allDay: data.allDay,
             display: data.display,
           })
