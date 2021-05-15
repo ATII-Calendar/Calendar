@@ -15,6 +15,7 @@ import AddIcon from '@material-ui/icons/Add';
 import { actionTypes as actions } from '../reducer';
 
 import AddEvent, { AddEventDialog } from './AddEvent';
+import EventDetail from './EventDetail';
 
 export default function Home() {
   // global state
@@ -38,6 +39,10 @@ export default function Home() {
 
   // used to make sure the calendar isn't rendered until events are fetched
   let [eventsLoaded, setEventsLoaded] = useState(false);
+
+  // used to keep track of the current event for the detail modal
+  let [currentEvent, setCurrentEvent] = useState<EventApi|null>(null);
+  let [eventDetailVisible, setEventDetailVisible] = useState(false);
 
   // used to manage adding events
   // dialogOpen is for opening and closing the popup, and startStr and endStr
@@ -156,11 +161,14 @@ export default function Home() {
       await db.collection('test_collection').doc(user.uid).collection('events').get()
         .then((querySnapshot) => {querySnapshot.forEach((doc => {
           let data = doc.data();
-          console.log(data);
           events.push({
-            id:doc.id, title:String(data.title),
+            id:doc.id,
+            title:String(data.title),
+            description:String(data.description),
             start: toDateTime(data.start.seconds),
+            _start: data.startStr,
             end: toDateTime(data.end.seconds),
+            _end: data.endStr,
             allDay: data.allDay
           })
         })
@@ -200,10 +208,8 @@ export default function Home() {
     return (
       <>
         <div className='home-sidebar'>
-          <AddEventDialog start={startStr} end={endStr} open={dialogOpen}
-            onClose={() => {setDialogOpen(false)}}/>
           <div className='home-sidebar-section' style={{marginBottom: "10px"}}>
-            <AddEvent />
+            <AddEvent calRef={calRef} />
           </div>
           <div className='home-sidebar-section'>
             <h4>Upcoming Events</h4>
@@ -217,7 +223,7 @@ export default function Home() {
   }
 
   // adds an event onto the calendar, allows for title of event and duration
-  let handleDateSelect = (selectInfo: DateSelectArg) => {
+  function handleDateSelect (selectInfo: DateSelectArg) {
     let calendarApi = selectInfo.view.calendar
     calendarApi.unselect() // clear date selection
 
@@ -229,16 +235,16 @@ export default function Home() {
     setEndStr(selectInfo.endStr);
   }
 
-  // TODO proper deletions (remove events from the API)
-  let handleEventClick = (clickInfo: EventClickArg) => {
-    if (window.confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
-      db.collection('test_collection').doc(user.uid).collection('events').doc(clickInfo.event.id).delete()
-      clickInfo.event.remove()
-    }
+  function handleEventClick(clickInfo: EventClickArg) {
+    let evnt = clickInfo.event;
+    setCurrentEvent(evnt);
+    // @ts-ignore
+    console.log(evnt._start);
+    setEventDetailVisible(true);
   }
 
   // for when events are added – adds events to local state
-  let handleEvents = (events: any) => {
+  function handleEvents (events: any) {
     // @ts-ignore
     setCurrentEvents(null);
     setCurrentEvents(events)
@@ -258,8 +264,10 @@ export default function Home() {
   return (
     <> { user ?
       <div className='home'>
-
         <Header showSidebar={showSidebar} setShowSidebar={setShowSidebar} calRef={calRef}/>
+        <AddEventDialog start={startStr} end={endStr} open={dialogOpen} calRef={calRef}
+          onClose={() => {setDialogOpen(false)}}/>
+        <EventDetail event={currentEvent} visible={eventDetailVisible} handleClose={() => setEventDetailVisible(false)}/>
         <div className='home-body'>
           {showSidebar && renderSidebar()}
           <div className='home-main'>
