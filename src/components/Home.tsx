@@ -14,13 +14,13 @@ import Button from '@material-ui/core/Button'
 import AddIcon from '@material-ui/icons/Add';
 import {results as _results, fetchEvents} from '../services/fetch'
 import { actionTypes as actions } from '../reducer';
-
 import AddEvent, { AddEventDialog } from './AddEvent';
 import EventDetail from './EventDetail';
 
-export default function Home() {
-  // global state
+let effectRan = false
 
+
+export default function Home() {
   let ran = false
   let user: any;
   let userSettings: any;
@@ -71,10 +71,11 @@ export default function Home() {
 
       setEventsLoaded(true);
     });
-  }, []);
-
-  useEffect(() => {
-    if (user) {
+    console.log(effectRan)
+    if (!effectRan) {
+      console.log("running running")
+      effectRan = true
+      console.log(effectRan)
       // if (userSettings.classes.length <= 0) {
         if (userSettings && userSettings._classes) {
           dispatch({ type: actions.SET_USER_SETTINGS, userSettings: {
@@ -95,10 +96,11 @@ export default function Home() {
           // in via session persistance so we do a couple things that are usually
           // taken care of in SignIn
           (async function() {
+            console.log("!!!!")
             // if they were signed in via session perssitence the check for admin
             // status needs to be done
             let admins: string[] = []
-            await db.collection('admins').get()
+            db.collection('admins').get()
               .then((querySnapshot: any) => {
                 querySnapshot.forEach((doc: any) => {
                   let data = doc.data();
@@ -118,6 +120,8 @@ export default function Home() {
             // here.
             await db.collection('test_collection').doc(user.uid).collection('settings').get()
             .then((querySnapshot: any) => {
+              console.log("!")
+              console.log(querySnapshot)
               querySnapshot.forEach((doc: any) => {
                 const data = doc.data();
                 dispatch({type: actions.SET_USER_SETTINGS, userSettings: {
@@ -126,7 +130,9 @@ export default function Home() {
                 }})
               });
             });
+            console.log("!!")
           })().then(() => {
+            console.log(userSettings)
             if (userSettings && userSettings._classes) {
               dispatch({ type: actions.SET_USER_SETTINGS, userSettings: {
                 classes: [
@@ -253,8 +259,6 @@ export default function Home() {
         <div>
         <form onSubmit={updateCal}>
         {/* Commenting out currently empty feeds*/}
-          <label htmlFor="personal"> My Events</label>
-          <input type="checkbox" id="personal" name="personal" value="personal"/> <br/>
       {/* <label htmlFor="events1"> Admissions </label>
           <input type="checkbox" id="event2" name="event2" value="RCDS"/> <br/>
           <label htmlFor="events2"> Alumni & Advancement </label>
@@ -281,7 +285,6 @@ export default function Home() {
 async function updateCal(event: any){
   event.preventDefault();
   let checks = {
-    "personal":event.target.personal.checked,
   //  "admissions":event.target.event1.checked,
   //  "alumni":event.target.event2.checked,
     "college":event.target.event3.checked,
@@ -304,7 +307,7 @@ async function updateCal(event: any){
 
     for (let i = 0; i < rcdsEvents.length; i++){
       if(checks[rcdsEvents[i].classNames[0]] && !api.getEventById(rcdsEvents[i].id)){
-      api.addEvent(rcdsEvents[i])
+        api.addEvent(rcdsEvents[i])
       }
     }
 
@@ -327,7 +330,7 @@ async function updateCal(event: any){
     if(evnt.classNames[0] == "personal"){
       setCurrentEvent(evnt);
       setEventDetailVisible(true);
-  }
+    }
   }
 
   // for when events are added – adds events to local state
@@ -341,17 +344,26 @@ async function updateCal(event: any){
 
 async function getEvents() {
   if(!ran){
-  results.then(results=>{
-  //@ts-ignore
-  let api = calRef.current.getApi();
+    _results.then(results=>{
+      //@ts-ignore
+      let api = calRef.current.getApi();
 
-  for (let i = 0; i < results.length; i++){
-    if(results[i].classNames[0] == "days" || results[i].classNames[0] == "closings"){
-    api.addEvent(results[i])
-    }
-  }
-  })
-  ran = true
+      let classDict:any = {}
+      let blocks = ["A", "B", "C", "D", "E", "F", "G", "H", "I"]
+      for(let i = 0; i < 9; i++){
+        classDict[blocks[i] + " block"] = userSettings._classes[blocks[i]] == "" ? null : userSettings._classes[blocks[i]]
+      }
+
+      for (let i = 0; i < results.length; i++){
+        if(results[i].classNames[0] == "days" || results[i].classNames[0] == "closings"){
+          if (classDict[results[i].title] != null){
+            results[i].title = classDict[results[i].title]
+          }
+          api.addEvent(results[i])
+        }
+      }
+    })
+    ran = true
   }
   return currentEvents
   }

@@ -1,6 +1,4 @@
 import { EventInput } from '@fullcalendar/react'
-import { useUserValue } from '../contexts/userContext'
-
 
 export const results: any = fetchEvents()
 let x = 100;
@@ -101,7 +99,7 @@ export function calculateCycle(day,date, userClasses){
     endTime.setMinutes(endTimes[j][1]);
 
     let className = userClasses[blocks[cycle[day-1][j]]] || blocks[cycle[day-1][j]] + ' block';
-    
+
     events.push({
       // the most beautiful expression you've ever seen:
       id:x,
