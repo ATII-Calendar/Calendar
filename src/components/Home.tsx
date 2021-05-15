@@ -12,7 +12,7 @@ import { EventInput } from '@fullcalendar/react'
 import { db } from '../services/firebase/firebaseConfig';
 import Button from '@material-ui/core/Button'
 import AddIcon from '@material-ui/icons/Add';
-import {results} from '../services/fetch'
+import {results as _results, fetchEvents} from '../services/fetch'
 import { actionTypes as actions } from '../reducer';
 
 import AddEvent, { AddEventDialog } from './AddEvent';
@@ -32,6 +32,7 @@ export default function Home() {
   }
 
   // local state
+  let [results, setResults] = useState(_results);
   // calRef: allows us to interact with the FullCalendar API
   let calRef = useRef<FullCalendar | null>(null);
   // a toggle we are not using right now, but would allow for the user to
@@ -60,87 +61,92 @@ export default function Home() {
   // checks for already created events when a user logs in
 
   useEffect(() => {
+    RetrieveEvents().then(events => {
+      // @ts-ignore
+      setCurrentEvents([...events])
+
+      //@ts-ignore
+      setSidebar(renderSidebar(events))
+
+
+      setEventsLoaded(true);
+    });
+  }, []);
+
+  useEffect(() => {
+    console.log('useEffect');
     if (user) {
-      RetrieveEvents().then(events => {
-        // @ts-ignore
-        setCurrentEvents([...events])
-
-        //@ts-ignore
-        setSidebar(renderSidebar(events))
-
-
-        setEventsLoaded(true);
-      });
-
-      if (userSettings && userSettings._classes) {
-        dispatch({ type: actions.SET_USER_SETTINGS, userSettings: {
-          classes: [
-            userSettings._classes.A,
-            userSettings._classes.B,
-            userSettings._classes.C,
-            userSettings._classes.D,
-            userSettings._classes.E,
-            userSettings._classes.F,
-            userSettings._classes.G,
-            userSettings._classes.H,
-            userSettings._classes.I,
-          ]
-        }});
-      } else {
-        // being in this if statement basically means that the user was signed
-        // in via session persistance so we do a couple things that are usually
-        // taken care of in SignIn
-        (async function() {
-          // if they were signed in via session perssitence the check for admin
-          // status needs to be done
-          let admins: string[] = []
-          await db.collection('admins').get()
-            .then((querySnapshot: any) => {
-              // console.log(querySnapshot);
-              querySnapshot.forEach((doc: any) => {
-                let data = doc.data();
-                admins.push(data.id);
-              });
-            }).then(() => {
-              if (admins.includes(user.uid)) {
-                dispatch({
-                  type: actions.SET_USER_IS_ADMIN,
-                  userIsAdmin: true
+      // if (userSettings.classes.length <= 0) {
+        if (userSettings && userSettings._classes) {
+          dispatch({ type: actions.SET_USER_SETTINGS, userSettings: {
+            classes: [
+              userSettings._classes.A,
+              userSettings._classes.B,
+              userSettings._classes.C,
+              userSettings._classes.D,
+              userSettings._classes.E,
+              userSettings._classes.F,
+              userSettings._classes.G,
+              userSettings._classes.H,
+              userSettings._classes.I,
+            ]
+          }});
+        } else {
+          // being in this if statement basically means that the user was signed
+          // in via session persistance so we do a couple things that are usually
+          // taken care of in SignIn
+          (async function() {
+            // if they were signed in via session perssitence the check for admin
+            // status needs to be done
+            let admins: string[] = []
+            await db.collection('admins').get()
+              .then((querySnapshot: any) => {
+                // console.log(querySnapshot);
+                querySnapshot.forEach((doc: any) => {
+                  let data = doc.data();
+                  admins.push(data.id);
                 });
-              }
-            });
+              }).then(() => {
+                if (admins.includes(user.uid)) {
+                  dispatch({
+                    type: actions.SET_USER_IS_ADMIN,
+                    userIsAdmin: true
+                  });
+                }
+              });
 
-          // if the user was signined in by session persistance, the code in the
-          // Signin component won't have been run so we load the user's settings
-          // here.
-          await db.collection('test_collection').doc(user.uid).collection('settings').get()
-          .then((querySnapshot: any) => {
-            querySnapshot.forEach((doc: any) => {
-              const data = doc.data();
-              dispatch({type: actions.SET_USER_SETTINGS, userSettings: {
-                _classes: data,
-                classes: []
-              }})
+            // if the user was signined in by session persistance, the code in the
+            // Signin component won't have been run so we load the user's settings
+            // here.
+            await db.collection('test_collection').doc(user.uid).collection('settings').get()
+            .then((querySnapshot: any) => {
+              querySnapshot.forEach((doc: any) => {
+                const data = doc.data();
+                dispatch({type: actions.SET_USER_SETTINGS, userSettings: {
+                  _classes: data,
+                  classes: []
+                }})
+              });
             });
+          })().then(() => {
+            if (userSettings && userSettings._classes) {
+              dispatch({ type: actions.SET_USER_SETTINGS, userSettings: {
+                classes: [
+                  userSettings._classes.A,
+                  userSettings._classes.B,
+                  userSettings._classes.C,
+                  userSettings._classes.D,
+                  userSettings._classes.E,
+                  userSettings._classes.F,
+                  userSettings._classes.G,
+                  userSettings._classes.H,
+                  userSettings._classes.I,
+                ]
+              }});
+            }
           });
-        })().then(() => {
-          if (userSettings && userSettings._classes) {
-            dispatch({ type: actions.SET_USER_SETTINGS, userSettings: {
-              classes: [
-                userSettings._classes.A,
-                userSettings._classes.B,
-                userSettings._classes.C,
-                userSettings._classes.D,
-                userSettings._classes.E,
-                userSettings._classes.F,
-                userSettings._classes.G,
-                userSettings._classes.H,
-                userSettings._classes.I,
-              ]
-            }});
-          }
-        });
-      }
+        }
+      // }
     }
   }, [user, userSettings]);
 
