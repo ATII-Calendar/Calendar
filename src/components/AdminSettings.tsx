@@ -78,7 +78,7 @@ export default function AdminSettings() {
         </div>
 
         <div className="globalevents">
-          <AddEvent global={true}/>
+          <AddEvent global={true} calRef={null}/>
         </div>
       </div>
     );

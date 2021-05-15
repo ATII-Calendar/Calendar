@@ -61,7 +61,10 @@ export function AddEventDialog({ onClose, selectedValue, open, start, end, calRe
   // is an all-day event and then pushes the event to the database
   const addEvent = (e: any) => {
     console.log(e)
-    let api = calRef.current.getApi();
+    let api
+    if (calRef) {
+      api = calRef.current.getApi();
+    }
     console.log(startDate)
     let endStr:any = 0
     let startStr:any = 0
@@ -86,16 +89,18 @@ export function AddEventDialog({ onClose, selectedValue, open, start, end, calRe
     addUserEvent(user.uid, title, _startDate ? _startDate : null,
             _endDate ? _endDate : null, allDay, global);
 
-    let temp = {
-      title: title,
-      description: description,
-      start: new Date(allDay ? startStr : `${startDate}T${startTime}-0400`),
-      end: new Date(allDay ? startStr : `${endDate}T${endTime}-0400`),
-      classNames: ["personal"],
-      allDay:allDay
+    if (api) {
+      let temp = {
+        title: title,
+        description: description,
+        start: new Date(allDay ? startStr : `${startDate}T${startTime}-0400`),
+        end: new Date(allDay ? startStr : `${endDate}T${endTime}-0400`),
+        classNames: ["personal"],
+        allDay:allDay
+      }
+      console.log(temp)
+      api.addEvent(temp);
     }
-    console.log(temp)
-    api.addEvent(temp);
 
     handleClose();
     e.preventDefault();

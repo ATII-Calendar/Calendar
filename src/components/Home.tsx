@@ -86,6 +86,35 @@ export default function Home() {
             userSettings._classes.I,
           ]
         }});
+      } else {
+        (async function() {
+          await db.collection('test_collection').doc(user.uid).collection('settings').get()
+          .then((querySnapshot: any) => {
+            querySnapshot.forEach((doc: any) => {
+              const data = doc.data();
+              dispatch({type: actions.SET_USER_SETTINGS, userSettings: {
+                _classes: data,
+                classes: []
+              }})
+            });
+          });
+        })().then(() => {
+          if (userSettings && userSettings._classes) {
+            dispatch({ type: actions.SET_USER_SETTINGS, userSettings: {
+              classes: [
+                userSettings._classes.A,
+                userSettings._classes.B,
+                userSettings._classes.C,
+                userSettings._classes.D,
+                userSettings._classes.E,
+                userSettings._classes.F,
+                userSettings._classes.G,
+                userSettings._classes.H,
+                userSettings._classes.I,
+              ]
+            }});
+          }
+        });
       }
     }
   }, [user, userSettings]);

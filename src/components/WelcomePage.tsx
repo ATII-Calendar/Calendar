@@ -21,6 +21,7 @@ export default function WelcomePage() {
   if (state) {
     user = state.user;
     userSettings = state.userSettings;
+    console.log(userSettings);
   }
 
   function continueBtn(e: any) {
