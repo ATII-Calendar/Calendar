@@ -87,7 +87,32 @@ export default function Home() {
           ]
         }});
       } else {
+        // being in this if statement basically means that the user was signed
+        // in via session persistance so we do a couple things that are usually
+        // taken care of in SignIn
         (async function() {
+          // if they were signed in via session perssitence the check for admin
+          // status needs to be done
+          let admins: string[] = []
+          await db.collection('admins').get()
+            .then((querySnapshot: any) => {
+              // console.log(querySnapshot);
+              querySnapshot.forEach((doc: any) => {
+                let data = doc.data();
+                admins.push(data.id);
+              });
+            }).then(() => {
+              if (admins.includes(user.uid)) {
+                dispatch({
+                  type: actions.SET_USER_IS_ADMIN,
+                  userIsAdmin: true
+                });
+              }
+            });
+
+          // if the user was signined in by session persistance, the code in the
+          // Signin component won't have been run so we load the user's settings
+          // here.
           await db.collection('test_collection').doc(user.uid).collection('settings').get()
           .then((querySnapshot: any) => {
             querySnapshot.forEach((doc: any) => {
