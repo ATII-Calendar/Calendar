@@ -16,6 +16,7 @@ import {results} from '../services/fetch'
 import { actionTypes as actions } from '../reducer';
 
 import AddEvent, { AddEventDialog } from './AddEvent';
+import EventDetail from './EventDetail';
 
 export default function Home() {
   // global state
@@ -37,12 +38,15 @@ export default function Home() {
   // toggle on/off weekends
   let [weekendsVisible, setWeekendsVisible] = useState(true);
   let [currentEvents, setCurrentEvents] = useState([]);
-  let [personalEvents, setPersonalEvents] = useState([]);
 
   let [showSidebar, setShowSidebar] = useState(true);
 
   // used to make sure the calendar isn't rendered until events are fetched
   let [eventsLoaded, setEventsLoaded] = useState(false);
+
+  // used to keep track of the current event for the detail modal
+  let [currentEvent, setCurrentEvent] = useState<EventApi|null>(null);
+  let [eventDetailVisible, setEventDetailVisible] = useState(false);
 
   // used to manage adding events
   // dialogOpen is for opening and closing the popup, and startStr and endStr
@@ -109,10 +113,14 @@ export default function Home() {
         .then((querySnapshot) => {querySnapshot.forEach((doc => {
           let data = doc.data();
           events.push({
-            id:doc.id, title:String(data.title),
+            id:doc.id,
+            title:String(data.title),
+            description:String(data.description),
             classNames:["personal"],
             start: toDateTime(data.start.seconds),
+            //_start: data.startStr,
             end: toDateTime(data.end.seconds),
+            //_end: data.endStr,
             allDay: data.allDay
           })
         })
@@ -136,7 +144,6 @@ export default function Home() {
     // no need to render background events, which are typically just the blocks
     // also no need to render "day" events, which will just make the event list
     // very long for no good reason
-    console.log(event)
     // @ts-ignore
     if (event.classNames[0] == "personal" && event.start > new Date()) {
       return (
@@ -155,10 +162,8 @@ export default function Home() {
     return (
       <>
         <div className='home-sidebar'>
-          <AddEventDialog start={startStr} end={endStr} open={dialogOpen}
-            onClose={() => {setDialogOpen(false)}}/>
           <div className='home-sidebar-section' style={{marginBottom: "10px"}}>
-            <AddEvent />
+            <AddEvent calRef={calRef} />
           </div>
           <div className='home-sidebar-section'>
             <h4>Upcoming Events</h4>
@@ -183,10 +188,10 @@ export default function Home() {
           <input type="checkbox" id="event5" name="event5" value="RCDS"/> <br/>
       {/*    <label htmlFor="events6"> General Skating </label>
           <input type="checkbox" id="event6" name="event6" value="RCDS"/> <br/> */}
-          <label htmlFor="events7"> Grade 6-12 Rotation </label>
-          <input type="checkbox" id="event7" name="event7" value="RCDS"/> <br/>
-        {/*  <label htmlFor="events8"> School Closings </label>
-          <input type="checkbox" id="event8" name="event8" value="RCDS"/> <br/> */}
+      {/*    <label htmlFor="events7"> Grade 6-12 Rotation </label>
+          <input type="checkbox" id="event7" name="event7" value="RCDS"/> <br/> */}
+          <label htmlFor="events8"> School Closings </label>
+          <input type="checkbox" id="event8" name="event8" value="RCDS"/> <br/>
           <Button type="submit" color="primary" variant="contained">Update Calendar</Button>
         </form>
         </div>
@@ -204,8 +209,8 @@ async function updateCal(event: any){
     "community":event.target.event4.checked,
     "days":event.target.event5.checked,
   //  "skating":event.target.event6.checked,
-    "rotation":event.target.event7.checked,
-  //  "closings":event.target.event7.checked,
+    //"rotation":event.target.event7.checked,
+    "closings":event.target.event8.checked,
   }
     //@ts-ignore
     let events = calRef.current.getApi().getEvents();
@@ -226,7 +231,7 @@ async function updateCal(event: any){
 
 }
   // adds an event onto the calendar, allows for title of event and duration
-  let handleDateSelect = (selectInfo: DateSelectArg) => {
+  function handleDateSelect (selectInfo: DateSelectArg) {
     let calendarApi = selectInfo.view.calendar
     calendarApi.unselect() // clear date selection
 
@@ -238,15 +243,16 @@ async function updateCal(event: any){
     setEndStr(selectInfo.endStr);
   }
 
-  let handleEventClick = (clickInfo: EventClickArg) => {
-    if (window.confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
-      db.collection('test_collection').doc(user.uid).collection('events').doc(clickInfo.event.id).delete()
-      clickInfo.event.remove()
-    }
+  function handleEventClick(clickInfo: EventClickArg) {
+    let evnt = clickInfo.event;
+    if(evnt.classNames[0] == "personal"){
+      setCurrentEvent(evnt);
+      setEventDetailVisible(true);
+  }
   }
 
   // for when events are added – adds events to local state
-  let handleEvents = (events: any) => {
+  function handleEvents (events: any) {
     // @ts-ignore
     setCurrentEvents(null);
     setCurrentEvents(events)
@@ -257,19 +263,18 @@ async function updateCal(event: any){
 async function getEvents() {
   if(!ran){
   results.then(results=>{
-    console.log("it happen")
   //@ts-ignore
   let api = calRef.current.getApi();
 
   for (let i = 0; i < results.length; i++){
-    if(results[i].classNames[0] == "days"){
+    if(results[i].classNames[0] == "days" || results[i].classNames[0] == "closings"){
     api.addEvent(results[i])
     }
   }
   })
   ran = true
-}
-  return RetrieveEvents().then(events => {return [...events] })
+  }
+  return currentEvents
   }
 
   // outline
@@ -281,8 +286,10 @@ async function getEvents() {
   return (
     <> { user ?
       <div className='home'>
-
         <Header showSidebar={showSidebar} setShowSidebar={setShowSidebar} calRef={calRef}/>
+        <AddEventDialog start={startStr} end={endStr} open={dialogOpen} calRef={calRef}
+          onClose={() => {setDialogOpen(false)}}/>
+        <EventDetail event={currentEvent} visible={eventDetailVisible} handleClose={() => setEventDetailVisible(false)}/>
         <div className='home-body'>
           {showSidebar && sidebar}
           <div className='home-main'>
