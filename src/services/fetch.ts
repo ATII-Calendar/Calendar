@@ -4,7 +4,7 @@ import { useUserValue } from '../contexts/userContext'
 
 export const results: any = fetchEvents()
 let x = 100;
-async function fetchEvents(){
+export async function fetchEvents(userClasses=[]){
   //Commenting out currently empty feeds
   let links = [
     //"https://www.ryecountryday.org/calendar/calendar_1378.ics", //admissions
@@ -16,7 +16,7 @@ async function fetchEvents(){
   //"https://www.ryecountryday.org/calendar/calendar_1431.ics", //grade 6-12 rotation
     "https://www.ryecountryday.org/calendar/calendar_1425.ics", //school closings
   ]
-  let classes = [
+  let calendars = [
   //  "admissions",
   //  "alumni",
     "college",
@@ -29,18 +29,18 @@ async function fetchEvents(){
   let rcdsEvents:any = []
   let data: any = []
   let results:any = []
-  for (let i = 0; i < classes.length; i++){
+  for (let i = 0; i < calendars.length; i++){
     rcdsEvents[i] = await fetch(links[i])
     let raw = await rcdsEvents[i].text()
     data[i] = raw.split(/\r?\n/)
-    results.push(...parseDays(data[i],classes[i],classes[i] == "days"))
+    results.push(...parseDays(data[i],calendars[i],calendars[i] == "days", userClasses))
 
   }
   return results
 }
 
 //Takes the ical feed and turns it into event objects
-function parseDays(data, classes, days){
+function parseDays(data, classes, days, userClasses){
   let events:EventInput[] = [];
   //console.log(data)
   for (let i = 4; i < data.length; i++){
@@ -65,7 +65,7 @@ function parseDays(data, classes, days){
         textColor:"#222E51"
       })
       if(days){
-        events.push(...calculateCycle(parseInt(bigtitle.substring(4,5)),start));
+        events.push(...calculateCycle(parseInt(bigtitle.substring(4,5)),start, userClasses));
       }
       i+= 5
     }
@@ -73,7 +73,7 @@ function parseDays(data, classes, days){
   //console.log(events)
   return events;
 }
-export function calculateCycle(day,date){
+export function calculateCycle(day,date, userClasses){
   let events: any[] = [];
   const blocks = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
 
@@ -102,11 +102,13 @@ export function calculateCycle(day,date){
     endTime.setHours(endTimes[j][0]);
     endTime.setMinutes(endTimes[j][1]);
 
+    let className = userClasses[blocks[cycle[day-1][j]]] || blocks[cycle[day-1][j]] + ' block';
+    
     events.push({
       // the most beautiful expression you've ever seen:
       id:x,
       classNames:["days"],
-      title: blocks[cycle[day-1][j]] + ' block',
+      title: className,
       start: startTime,
       end: endTime,
       display: 'background',
