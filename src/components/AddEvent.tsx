@@ -10,7 +10,7 @@ import { useUserValue } from '../contexts/userContext';
 
 // Component that is just the dialog – separated so that we can give it params
 // and give inputs initial values
-export function AddEventDialog({ onClose, selectedValue, open, start, end }: any) {
+export function AddEventDialog({ onClose, selectedValue, open, start, end, global }: any) {
   // variables that are assigned when inputs are modified (title, date, etc)
   let [title, setTitle] = useState("");
   let [description, setDescription] = useState("");
@@ -21,6 +21,7 @@ export function AddEventDialog({ onClose, selectedValue, open, start, end }: any
 
   // global state: the current user
   let user: any;
+  let globalEvents: any;
   let userState = useUserValue().state;
   if (userState) {
     user = userState.user;
@@ -69,7 +70,7 @@ export function AddEventDialog({ onClose, selectedValue, open, start, end }: any
 
     // @ts-ignore
     addUserEvent(user.uid, title, _startDate ? _startDate : null,
-            _endDate ? _endDate : null, allDay);
+            _endDate ? _endDate : null, allDay, global);
 
     handleClose();
     e.preventDefault();
@@ -131,7 +132,7 @@ export function AddEventDialog({ onClose, selectedValue, open, start, end }: any
 // component with button to launch the dialog – this is what we use in the 
 // sidebar. the whole thing can't be one component so that the dragging
 // interface doesn't add a random button to the UI
-export default function AddEvent() {
+export default function AddEvent({ global }: { global: boolean }) {
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
@@ -153,7 +154,12 @@ export default function AddEvent() {
       >
         Add Event
       </Button>
-      <AddEventDialog selectedValue={""} open={open} onClose={handleClose} />
+      <AddEventDialog
+        selectedValue={""}
+        open={open}
+        onClose={handleClose}
+        global={global || false}
+      />
     </div>
   );
 }

@@ -12,6 +12,7 @@ import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 import { db } from './services/firebase/firebaseConfig';
 import { actionTypes as actions } from './reducer'
+import AdminSettings from './components/AdminSettings';
 
 // this is how we can customize the theme
 // changes to things like colors will automatically apply to components using
@@ -27,17 +28,18 @@ const theme = createMuiTheme({
 function App() {
   //Defining variables
   let user: any;
-  let userSettings: { class: string[] };
+  let userIsAdmin: any;
   let userState = useUserValue().state;
   if (userState) {
     user = userState.user;
-    userSettings = userState.settings || null
-    console.log(userSettings);
+    userIsAdmin = userState.userIsAdmin;
   }
 
   // routes are fairly self-explanitory
   // `path` is the relative path following the URL, and `render` is a function
   // that returns JSX, which in our case will be the component/page
+  //
+  // the /admin route is only avaible to users who are admins
   return (
     //Sets the theme
     <ThemeProvider theme={theme}>
@@ -53,6 +55,7 @@ function App() {
       <Route exact path="/home" render={() => <Home/>}/>
       <Route exact path="/signin" render={() => <SignIn/>}/>
       <Route exact path="/settings" render={() => <UserSettings/>}/>
+      <Route exact path="/admin" render={() => <AdminSettings/>}/>
     </BrowserRouter>
     </ThemeProvider>
   );
