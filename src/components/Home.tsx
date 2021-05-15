@@ -13,15 +13,14 @@ import { db } from '../services/firebase/firebaseConfig';
 import Button from '@material-ui/core/Button'
 import AddIcon from '@material-ui/icons/Add';
 import {results} from '../services/fetch'
-
-export default function Home() {
-  let ran = false
 import { actionTypes as actions } from '../reducer';
 
 import AddEvent, { AddEventDialog } from './AddEvent';
 
 export default function Home() {
   // global state
+
+  let ran = false
   let user: any;
   let userSettings: any;
   let userState = useUserValue().state;
@@ -38,6 +37,8 @@ export default function Home() {
   // toggle on/off weekends
   let [weekendsVisible, setWeekendsVisible] = useState(true);
   let [currentEvents, setCurrentEvents] = useState([]);
+  let [personalEvents, setPersonalEvents] = useState([]);
+
   let [showSidebar, setShowSidebar] = useState(true);
 
   // used to make sure the calendar isn't rendered until events are fetched
@@ -50,6 +51,7 @@ export default function Home() {
   let [ dialogOpen, setDialogOpen ] = useState(false);
   let [ startStr, setStartStr ] = useState(null);
   let [ endStr, setEndStr ] = useState(null);
+  let [ sidebar, setSidebar ] = useState(null);
 
   // checks for already created events when a user logs in
 
@@ -57,9 +59,12 @@ export default function Home() {
     if (user) {
       RetrieveEvents().then(events => {
         // @ts-ignore
-        setEvents([...events]);
-        // @ts-ignore
-        setCurrentEvents([...events]);
+        setCurrentEvents([...events])
+
+        //@ts-ignore
+        setSidebar(renderSidebar(events))
+
+
         setEventsLoaded(true);
       });
 
@@ -103,9 +108,9 @@ export default function Home() {
       await db.collection('test_collection').doc(user.uid).collection('events').get()
         .then((querySnapshot) => {querySnapshot.forEach((doc => {
           let data = doc.data();
-          console.log(data);
           events.push({
             id:doc.id, title:String(data.title),
+            classNames:["personal"],
             start: toDateTime(data.start.seconds),
             end: toDateTime(data.end.seconds),
             allDay: data.allDay
@@ -131,8 +136,9 @@ export default function Home() {
     // no need to render background events, which are typically just the blocks
     // also no need to render "day" events, which will just make the event list
     // very long for no good reason
+    console.log(event)
     // @ts-ignore
-    if (event.display !== 'background' && event.title.substring(0, 3) !== "Day" && event.classNames[0] == "personal" && event.start > new Date()) {
+    if (event.classNames[0] == "personal" && event.start > new Date()) {
       return (
         <li key={event.id}>
           <b>{formatDate(event.start!, {month: 'short', day: 'numeric'}) + " "}</b>
@@ -144,7 +150,8 @@ export default function Home() {
 
   // definition of the sidebar interface
   // maybe move this to its own component
-  function renderSidebar() {
+  function renderSidebar(events) {
+
     return (
       <>
         <div className='home-sidebar'>
@@ -156,7 +163,7 @@ export default function Home() {
           <div className='home-sidebar-section'>
             <h4>Upcoming Events</h4>
             <ul>
-              {currentEvents.map(renderSidebarEvent)}
+              {events.map(renderSidebarEvent)}
             </ul>
         </div>
         <div>
@@ -256,7 +263,6 @@ async function getEvents() {
 
   for (let i = 0; i < results.length; i++){
     if(results[i].classNames[0] == "days"){
-      console.log("it keep happen")
     api.addEvent(results[i])
     }
   }
@@ -278,7 +284,7 @@ async function getEvents() {
 
         <Header showSidebar={showSidebar} setShowSidebar={setShowSidebar} calRef={calRef}/>
         <div className='home-body'>
-          {showSidebar && renderSidebar()}
+          {showSidebar && sidebar}
           <div className='home-main'>
             { eventsLoaded && <FullCalendar
               plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
