@@ -10,7 +10,7 @@ import { useUserValue } from '../contexts/userContext';
 
 // Component that is just the dialog – separated so that we can give it params
 // and give inputs initial values
-export function AddEventDialog({ onClose, selectedValue, open, start, end, calRef }: any) {
+export function AddEventDialog({ onClose, selectedValue, open, start, end, calRef, global }: any) {
   // variables that are assigned when inputs are modified (title, date, etc)
   let [title, setTitle] = useState("");
   let [description, setDescription] = useState("");
@@ -21,6 +21,7 @@ export function AddEventDialog({ onClose, selectedValue, open, start, end, calRe
 
   // global state: the current user
   let user: any;
+  let globalEvents: any;
   let userState = useUserValue().state;
   if (userState) {
     user = userState.user;
@@ -82,8 +83,8 @@ export function AddEventDialog({ onClose, selectedValue, open, start, end, calRe
     }
 
     // @ts-ignore
-    addUserEvent(user.uid, title, description, _startDate ? _startDate : null,
-            _endDate ? _endDate : null, allDay);
+    addUserEvent(user.uid, title, _startDate ? _startDate : null,
+            _endDate ? _endDate : null, allDay, global);
 
     let temp = {
       title: title,
@@ -156,7 +157,7 @@ export function AddEventDialog({ onClose, selectedValue, open, start, end, calRe
 // component with button to launch the dialog – this is what we use in the
 // sidebar. the whole thing can't be one component so that the dragging
 // interface doesn't add a random button to the UI
-export default function AddEvent({ calRef }: any) {
+export default function AddEvent({ global, calRef }: { global: boolean, calRef:any}) {
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
@@ -178,7 +179,13 @@ export default function AddEvent({ calRef }: any) {
       >
         Add Event
       </Button>
-      <AddEventDialog selectedValue={""} open={open} onClose={handleClose} calRef={calRef}/>
+      <AddEventDialog
+        selectedValue={""}
+        open={open}
+        onClose={handleClose}
+        global={global || false}
+        calRef={calRef}
+      />
     </div>
   );
 }

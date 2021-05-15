@@ -102,6 +102,7 @@ export default function Home() {
   async function RetrieveEvents() {
 
     let events:EventInput[] = []
+    let _globalEvents: EventInput[] = []
 
     // load the user's events if they are logged in
     // this check isn't strictly necessary because the component should
@@ -125,9 +126,29 @@ export default function Home() {
           })
         })
       )})
+
+      // fetching global events
+      await db.collection('global_calendar').get()
+        .then((querySnapshot) => {querySnapshot.forEach((doc => {
+          let data = doc.data();
+          _globalEvents.push({
+            id:doc.id, title:String(data.title),
+            start: toDateTime(data.start.seconds),
+            end: toDateTime(data.end.seconds),
+            allDay: data.allDay,
+            display: data.display,
+          })
+        })
+      )})
+
+      // adding the global events to the global state
+      dispatch({
+        type: actions.SET_GLOBAL_EVENTS,
+        globalEvents: _globalEvents
+      })
     }
 
-    return events;
+    return [...events, ..._globalEvents];
   }
 
   // styling for event content (bold/italics)
@@ -163,7 +184,7 @@ export default function Home() {
       <>
         <div className='home-sidebar'>
           <div className='home-sidebar-section' style={{marginBottom: "10px"}}>
-            <AddEvent calRef={calRef} />
+            <AddEvent calRef={calRef} global={false} />
           </div>
           <div className='home-sidebar-section'>
             <h4>Upcoming Events</h4>
@@ -293,6 +314,8 @@ async function getEvents() {
         <div className='home-body'>
           {showSidebar && sidebar}
           <div className='home-main'>
+            <AddEventDialog global={false} start={startStr} end={endStr} open={dialogOpen} calRef={calRef}
+              onClose={() => {setDialogOpen(false)}}/>
             { eventsLoaded && <FullCalendar
               plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
               height="100%"

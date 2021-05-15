@@ -2,15 +2,21 @@ import firebase from 'firebase';
 
 export const initialState: {
   user: firebase.User | null,
-  userSettings: any
+  userSettings: any,
+  userIsAdmin: boolean,
+  globalEvents: any[]
 } = {
   user: null,
-  userSettings: null
+  userSettings: null,
+  userIsAdmin: false,
+  globalEvents: []
 }
 
 export enum actionTypes {
   SET_USER,
-  SET_USER_SETTINGS
+  SET_USER_SETTINGS,
+  SET_USER_IS_ADMIN,
+  SET_GLOBAL_EVENTS,
 }
 
 const reducer = (state: any, action: any) => {
@@ -25,6 +31,18 @@ const reducer = (state: any, action: any) => {
       return {
         ...state,
         userSettings: action.userSettings
+      }
+
+    case actionTypes.SET_USER_IS_ADMIN:
+      return {
+        ...state,
+        userIsAdmin: action.userIsAdmin
+      }
+
+    case actionTypes.SET_GLOBAL_EVENTS:
+      return {
+        ...state,
+        globalEvents: action.globalEvents
       }
 
     default:
