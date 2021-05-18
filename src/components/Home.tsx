@@ -71,11 +71,8 @@ export default function Home() {
 
       setEventsLoaded(true);
     });
-    console.log(effectRan)
     if (!effectRan) {
-      console.log("running running")
       effectRan = true
-      console.log(effectRan)
       // if (userSettings.classes.length <= 0) {
         if (userSettings && userSettings._classes) {
           dispatch({ type: actions.SET_USER_SETTINGS, userSettings: {
@@ -96,7 +93,6 @@ export default function Home() {
           // in via session persistance so we do a couple things that are usually
           // taken care of in SignIn
           (async function() {
-            console.log("!!!!")
             // if they were signed in via session perssitence the check for admin
             // status needs to be done
             let admins: string[] = []
@@ -120,8 +116,6 @@ export default function Home() {
             // here.
             await db.collection('test_collection').doc(user.uid).collection('settings').get()
             .then((querySnapshot: any) => {
-              console.log("!")
-              console.log(querySnapshot)
               querySnapshot.forEach((doc: any) => {
                 const data = doc.data();
                 dispatch({type: actions.SET_USER_SETTINGS, userSettings: {
@@ -130,9 +124,7 @@ export default function Home() {
                 }})
               });
             });
-            console.log("!!")
           })().then(() => {
-            console.log(userSettings)
             if (userSettings && userSettings._classes) {
               dispatch({ type: actions.SET_USER_SETTINGS, userSettings: {
                 classes: [
