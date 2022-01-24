@@ -80,6 +80,8 @@ export function calculateCycle(day,date, userClasses){
     [6, 4, 5, 7, 8],
     [1, 2, 0, 3, 8],
     [5, 6, 4, 7, 8],
+    [0, 1, 2, 3, 8],
+    [4, 5, 6, 7, 8],
   ]
 
   let startTimes = [
